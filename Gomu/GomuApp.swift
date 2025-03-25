@@ -11,7 +11,7 @@ import SwiftUI
 struct GomuApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            MainTabView()
         }
     }
 }
