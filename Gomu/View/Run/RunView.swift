@@ -9,6 +9,8 @@ import SwiftUI
 
 
 public struct RunView: View {
+    @State private var isShowingSettings = false
+    
     public var body: some View {
         ZStack{
             Color("primary")
@@ -34,6 +36,7 @@ public struct RunView: View {
                     
                     Button(action: {
                         print("settings")
+                        isShowingSettings = true
                     }) {
                         Image(systemName: "gearshape.fill")
                             .font(.largeTitle)
@@ -95,7 +98,9 @@ public struct RunView: View {
             }
             .padding(.bottom, 80)
         }
-//        .padding(.bottom, 80)
+        .fullScreenCover(isPresented: $isShowingSettings) {
+            SettingsView()
+        }
     }
 }
 

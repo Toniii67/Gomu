@@ -13,7 +13,7 @@ struct MainTabView: View {
     var body: some View {
         ZStack {
             Color("primary")
-                    .ignoresSafeArea(.all)
+                .ignoresSafeArea(.all)
             
             VStack {
                 Spacer()
@@ -44,7 +44,6 @@ struct CustomTabBar: View {
             RoundedRectangle(cornerRadius: 25)
                 .fill(Color("primary"))
                 .frame(height: 75)
-                .shadow(radius: 4)
 
             HStack {
                 Button(action: { selectedTab = 0 }) {
@@ -55,7 +54,6 @@ struct CustomTabBar: View {
                 
                 Spacer()
                 
-                // Tombol Tengah (Run)
                 Button(action: { selectedTab = 1 }) {
                     Image(systemName: "figure.run")
                         .font(.title)
@@ -68,7 +66,6 @@ struct CustomTabBar: View {
                 
                 Spacer()
                 
-                // Tombol Stats
                 Button(action: { selectedTab = 2 }) {
                     Image(systemName: "chart.bar.fill")
                         .font(.title)
@@ -76,7 +73,6 @@ struct CustomTabBar: View {
                 }
             }
             .padding(.horizontal, 60)
-            .frame(height: 70)
         }
     }
 }
