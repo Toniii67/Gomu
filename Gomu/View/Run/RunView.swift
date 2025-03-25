@@ -93,7 +93,9 @@ public struct RunView: View {
                 
                 Spacer()
             }
+            .padding(.bottom, 80)
         }
+//        .padding(.bottom, 80)
     }
 }
 
