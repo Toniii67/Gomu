@@ -9,7 +9,7 @@ import SwiftUI
 
 
 public struct StartRunView: View {
-//    @State var runData = RunModel()
+    @ObservedObject var viewModel: RunViewModel
     
     public var body: some View {
         ZStack{
@@ -25,11 +25,11 @@ public struct StartRunView: View {
             }
             
             VStack{
-                VStack{ //Details
-                    InformationText(label: "kilometers", data: "0,0", fontSize: 68)
+                VStack{
+                    InformationText(label: "kilometers", data: String(format: "%.2f", viewModel.distance))
                     HStack{
-                        InformationText(label: "Time", data: "00:30 ")
-                        InformationText(label: "Pace", data: "6'30''")
+                        InformationText(label: "Time", data: formatTime(viewModel.duration))
+                        InformationText(label: "Avg. Pace", data: String(format: "%.2f", viewModel.duration/(viewModel.distance + 0.001)))
                     }
                 }
                 .padding()
@@ -46,11 +46,11 @@ public struct StartRunView: View {
                         .resizable()
                         .scaledToFit()
                         .frame(height: 200)
-                    
                 }
                 
-                Button(action: { // Pause Button
+                Button(action: {
                     print("pause")
+                    viewModel.pauseRun()
                 }){
                     Image(systemName: "pause")
                         .resizable()
@@ -64,8 +64,14 @@ public struct StartRunView: View {
             .padding(.bottom, 20)
         }
     }
+    
+    private func formatTime(_ time: TimeInterval) -> String {
+        let minutes = Int(time) / 60
+        let seconds = Int(time) % 60
+        return String(format: "%02d:%02d", minutes, seconds)
+    }
 }
 
 #Preview {
-    StartRunView()
+    StartRunView(viewModel: RunViewModel())
 }

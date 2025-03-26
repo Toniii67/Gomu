@@ -5,29 +5,35 @@
 //  Created by Asad on 25/03/25.
 //
 
-import Foundation
+import SwiftData
+import SwiftUI
 
+@Model
 class RunModel {
-    public var id: Int = 0
-    public var distance: Double = 0.0
-    public var elevation: Double = 0.0
-    public var calories: Double = 0.0
-    public var bpm: Int = 80
+    var id: UUID
+    var duration: TimeInterval
+    var averagePace: String
+    var distance: Double
+    var elevation: Double
+    var bpm: Int
+    var calories: Int
+    var timestamp: Date
     
-    public var startTime: Date?
-    public var accumulatedTime:TimeInterval = 0
-    func start() -> Void {
-        self.startTime = Date()
-    }
-    func stop() -> Void {
-        self.accumulatedTime = self.elapsedTime()
-        self.startTime = nil
-    }
-    func reset() -> Void {
-        self.accumulatedTime = 0
-        self.startTime = nil
-    }
-    func elapsedTime() -> TimeInterval {
-        return -(self.startTime?.timeIntervalSinceNow ?? 0)+self.accumulatedTime
+    init(
+    duration: TimeInterval,
+    averagePace: String,
+    distance: Double,
+    elevation: Double,
+    bpm: Int,
+    calories: Int
+    ){
+        self.id = UUID()
+        self.duration = duration
+        self.averagePace = averagePace
+        self.distance = distance
+        self.elevation = elevation
+        self.bpm = bpm
+        self.calories = calories
+        self.timestamp = Date()
     }
 }

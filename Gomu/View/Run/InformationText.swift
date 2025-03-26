@@ -9,13 +9,12 @@ import SwiftUI
 public struct InformationText: View{
     var label: String
     var data: String
-    var fontSize: CGFloat = 54
+    var fontSize: CGFloat = 48
     public var body: some View {
         VStack{
             Text(label)
                 .font(.system(.headline,design:.rounded))
             Text(data)
-//                .font(.custom("important", size: fontSize))
                 .font(.system(size: fontSize, design: .rounded))
                 .bold()
         }

@@ -81,6 +81,7 @@ struct RunDetails: View{
                 InformationText(label: "Calories", data: "0", fontSize: 30)
             }
             
+            
         }
     }
 }
