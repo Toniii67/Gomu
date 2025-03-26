@@ -6,61 +6,58 @@
 //
 
 import SwiftUI
+import MapKit
 
 struct StopRunView: View {
 //    @State var runData: RunModel
 //    @State var targetData:
     var body: some View {
         VStack{
-            Text("Map")
-                .frame(height: 500)
+            MapView()
+                .ignoresSafeArea(.all)
+                .scaledToFill()
+                .frame(height:500)
+                .padding(0)
             ZStack{
                 Color("primary")
                     .ignoresSafeArea(.all)
-                VStack{
-                    Spacer()
-                    Image("BackgroundRun")
-                        .resizable()
-                        .scaledToFill()
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .ignoresSafeArea(.all)
-                }
+                Image("BackgroundRun")
+                    .resizable()
+                    .scaledToFill()
+                    .ignoresSafeArea(.all)
                 VStack{
                     RunDetails()
-                    Gauge(value: 2.1, in: 0...5){
-                        
+//                        .padding(.top, 20)
+                    VStack{
+                        Gauge(value: 2.5, in: 0...5){
+                        }
+                        .tint(Color("secondary"))
+                        .overlay(content: {
+                            Capsule()
+                                .foregroundStyle(Color("secondary"))
+                                .opacity(0.2)
+                        })
+                        .padding()
+                        ActionButtons()
                     }
-                    .tint(Color("secondary"))
-                    .padding()
-                    
+                    .padding(.horizontal)
                     HStack{
-                        Button(action: {
-                            print("pause")
-                        }){
-                            Image(systemName: "pause")
-                                .resizable()
-                                .frame(width: 24, height: 24)
-                                .padding(30)
-                                .foregroundColor(.white)
-                                .background(Color("secondary"))
-                                .clipShape(Circle())
-                        }
-                        
-                        Button(action: {
-                            print("stop")
-                        }){
-                            Image(systemName: "stop")
-                                .resizable()
-                                .frame(width: 24, height: 24)
-                                .padding(30)
-                                .foregroundColor(.white)
-                                .background(Color("secondary"))
-                                .clipShape(Circle())
-                        }
+                        Image("Gomu")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 284)
+                            .position(x:70, y:200)
+                        Image("ChatBallonSecond")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 224, height: 132)
+                            .position(x:50, y:80)
                     }
-                }.padding(.bottom, 30)
-                
+                    Spacer()
+//                    Spacer()
+                }
             }
+            .padding(0)
         }
     }
 }
@@ -70,14 +67,18 @@ struct RunDetails: View{
     var body: some View{
         VStack{
             HStack{
-                InformationText(label: "Time", data: "", fontSize: 30)
-                InformationText(label: "Avg. Pace", data: "", fontSize: 30)
-                InformationText(label: "Kilometres", data: "", fontSize: 30)
+                InformationText(label: "Time", data: "00:21", fontSize: 30)
+                Spacer()
+                InformationText(label: "Avg. Pace", data: "6'30''", fontSize: 30)
+                Spacer()
+                InformationText(label: "Kilometres", data: "0,00", fontSize: 30)
             }
             HStack{
-                InformationText(label: "Elevation", data: "", fontSize: 30)
-                InformationText(label: "BPM", data: "", fontSize: 30)
-                InformationText(label: "Calories", data: "", fontSize: 30)
+                InformationText(label: "Elevation", data: "00:21", fontSize: 30)
+                Spacer()
+                InformationText(label: "BPM", data: "89", fontSize: 30)
+                Spacer()
+                InformationText(label: "Calories", data: "0", fontSize: 30)
             }
             
             
@@ -85,17 +86,53 @@ struct RunDetails: View{
     }
 }
 
-//struct ActionButtons: View{
-//    var body: some View{
-//        HStack{
-//            Button(action:{
-//                print("Stop")
-//            }){
-//                Text("Stop")
-//            }
-//        }
-//    }
-//}
+struct ActionButtons: View{
+    var body: some View{
+        HStack{
+            Button(action:{
+                print("Stop")
+            }){
+                Image(systemName: "stop.fill")
+                    .resizable()
+                    .frame(width: 20, height: 20)
+                    .padding(.horizontal, 30)
+                    .padding(.vertical,15)
+                    .foregroundStyle(Color.white)
+                    .background(Color.black)
+                    .clipShape(.capsule)
+            }
+            Spacer()
+            Button(action:{
+                print("Continue")
+            }){
+                Image(systemName: "play.fill")
+                    .resizable()
+                    .frame(width: 20, height: 20)
+                    .padding(.horizontal, 30)
+                    .padding(.vertical, 15)
+                    .foregroundStyle(Color.white)
+                    .background(Color("secondary"))
+                    .clipShape(.capsule)
+            }
+//            .background(Color.black)
+        }
+        .padding(.horizontal)
+    }
+}
+
+struct MapView: View {
+    let position = MapCameraPosition.region(MKCoordinateRegion(
+        center: CLLocationCoordinate2D(latitude: -6.200000, longitude: 106.816666),
+        span: MKCoordinateSpan(latitudeDelta: 0.001, longitudeDelta: 0.1)
+    ))
+
+    var body: some View {
+        Map(initialPosition: position)
+//            .frame(height: 500)
+//        MapZoomStepper
+    }
+}
+
 
 #Preview {
     StopRunView()
