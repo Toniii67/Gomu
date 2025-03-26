@@ -65,7 +65,7 @@ public struct RunView: View {
                         isRunning = true
                     }){
                         Text("Start")
-                            .font(.title2)
+                            .font(.system(.title2, design: .rounded))
                             .foregroundColor(.white)
                             .fontWeight(.semibold)
                             .padding()
@@ -92,7 +92,7 @@ public struct RunView: View {
                 }
                 
                 Text("Set Goal")
-                    .font(.subheadline)
+                    .font(.system(.subheadline, design: .rounded))
                     .fontWeight(.semibold)
                     .padding(.top, 10)
                 
