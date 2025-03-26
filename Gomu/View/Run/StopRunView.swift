@@ -32,10 +32,34 @@ struct StopRunView: View {
                     }
                     .tint(Color("secondary"))
                     .padding()
-//                    .background(Color.yellow)
-//                    Spacer()
-
-                }
+                    
+                    HStack{
+                        Button(action: {
+                            print("pause")
+                        }){
+                            Image(systemName: "pause")
+                                .resizable()
+                                .frame(width: 24, height: 24)
+                                .padding(30)
+                                .foregroundColor(.white)
+                                .background(Color("secondary"))
+                                .clipShape(Circle())
+                        }
+                        
+                        Button(action: {
+                            print("stop")
+                        }){
+                            Image(systemName: "stop")
+                                .resizable()
+                                .frame(width: 24, height: 24)
+                                .padding(30)
+                                .foregroundColor(.white)
+                                .background(Color("secondary"))
+                                .clipShape(Circle())
+                        }
+                    }
+                }.padding(.bottom, 30)
+                
             }
         }
     }
@@ -46,31 +70,32 @@ struct RunDetails: View{
     var body: some View{
         VStack{
             HStack{
-                InformationText(label: "Time", data: "00:21", fontSize: 30)
-                InformationText(label: "Avg. Pace", data: "6'30''", fontSize: 30)
-                InformationText(label: "Kilometres", data: "0,00", fontSize: 30)
+                InformationText(label: "Time", data: "", fontSize: 30)
+                InformationText(label: "Avg. Pace", data: "", fontSize: 30)
+                InformationText(label: "Kilometres", data: "", fontSize: 30)
             }
             HStack{
-                InformationText(label: "Elevation", data: "00:21", fontSize: 30)
-                InformationText(label: "BPM", data: "89", fontSize: 30)
-                InformationText(label: "Calories", data: "0", fontSize: 30)
+                InformationText(label: "Elevation", data: "", fontSize: 30)
+                InformationText(label: "BPM", data: "", fontSize: 30)
+                InformationText(label: "Calories", data: "", fontSize: 30)
             }
+            
             
         }
     }
 }
 
-struct ActionButtons: View{
-    var body: some View{
-        HStack{
-            Button(action:{
-                print("Stop")
-            }){
-                Text("Stop")
-            }
-        }
-    }
-}
+//struct ActionButtons: View{
+//    var body: some View{
+//        HStack{
+//            Button(action:{
+//                print("Stop")
+//            }){
+//                Text("Stop")
+//            }
+//        }
+//    }
+//}
 
 #Preview {
     StopRunView()
