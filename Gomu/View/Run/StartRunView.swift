@@ -8,7 +8,7 @@
 import SwiftUI
 
 
-public struct RunStartView: View {
+public struct StartRunView: View {
 //    @State var runData = RunModel()
     
     public var body: some View {
@@ -66,23 +66,6 @@ public struct RunStartView: View {
     }
 }
 
-public struct InformationText: View{
-    var label: String
-    var data: String
-    var fontSize: CGFloat = 54
-    public var body: some View {
-        VStack{
-            Text(label)
-                .font(.headline)
-            Text(data)
-                .font(.custom("important", size: fontSize))
-                .bold()
-        }
-        .foregroundColor(.white)
-        .padding(8)
-    }
-}
-
 #Preview {
-    RunStartView()
+    StartRunView()
 }
