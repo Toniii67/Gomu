@@ -10,6 +10,7 @@ import SwiftUI
 
 public struct RunView: View {
     @State private var isShowingSettings = false
+    @State private var isRunning = false
     
     public var body: some View {
         ZStack{
@@ -61,7 +62,7 @@ public struct RunView: View {
                 
                 ZStack{
                     Button(action: {
-                        print("start")
+                        isRunning = true
                     }){
                         Text("Start")
                             .font(.title2)
@@ -72,6 +73,7 @@ public struct RunView: View {
                             .background(Color("secondary"))
                             .cornerRadius(25)
                     }
+                    
                     
                     Button(action: {
                         print("music")
@@ -100,6 +102,9 @@ public struct RunView: View {
         }
         .fullScreenCover(isPresented: $isShowingSettings) {
             SettingsView()
+        }
+        .fullScreenCover(isPresented: $isRunning){
+            RunStartView()
         }
     }
 }
