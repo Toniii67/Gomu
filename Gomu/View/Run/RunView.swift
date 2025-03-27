@@ -5,6 +5,13 @@
 //  Created by Franco Antonio Pranata on 25/03/25.
 //
 
+
+/**
+ start ke stop itu turun animasinya
+ stop ke start itu naik animasinya
+ 
+ alternatif solusi adalah run ke start modal, sisanya navigation ntr back nya pake dismiss jdi cmn ada 1 modal
+ **/
 import SwiftUI
 
 
