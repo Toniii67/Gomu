@@ -16,39 +16,53 @@ class RunViewModel: ObservableObject {
     @Published var distance: Double = 0
     @Published var bpm: Int = 80
     @Published var calories: Int = 0
+    @Published var elevation: Double = 0.0
+    @Published var locationManager: LocationManager = LocationManager()
     private var timer: Timer?
     
     func startRun() {
         isRunning = true
         duration = 0
         distance = 0
-        calories = 0
         bpm = 80
+        calories = 0
+        elevation = 0.0
+        locationManager = LocationManager()
+        locationManager.startTracking()
         timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
             self.duration += 1
-            self.distance += Double.random(in: 0.002...0.004)
-            self.calories += 1
-            self.bpm = Int.random(in: 80...150)
+            DispatchQueue.main.async {
+                self.distance = self.locationManager.calculateTotalDistance()
+                self.calories += 1
+                self.bpm = Int.random(in: 80...150)
+            }
         }
+        self.elevation = self.locationManager.calculateElevationGain()
     }
     
     func pauseRun() {
         timer?.invalidate()
+        locationManager.stopTracking()
     }
     
     func resumeRun() {
         isRunning = true
+        locationManager.startTracking()
         timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
             self.duration += 1
-            self.distance += Double.random(in: 0.002...0.004)
-            self.calories += 1
-            self.bpm = Int.random(in: 80...150)
+            DispatchQueue.main.async {
+                self.distance = self.locationManager.calculateTotalDistance()
+                self.calories += 1
+                self.bpm = Int.random(in: 80...150)
+            }
         }
+        self.elevation = self.locationManager.calculateElevationGain()
     }
     
     func stopRun() {
         timer?.invalidate()
         isRunning = false
+        locationManager.stopTracking()
         
         let distanceInMiles = distance / 1.6
         

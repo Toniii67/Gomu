@@ -11,7 +11,7 @@ import SwiftUI
 public struct StartRunView: View {
     @ObservedObject var viewModel: RunViewModel
     @State private var isPaused: Bool = false
-//    @Binding var isRunning: Bool
+    @Binding var isRunning: Bool
     
     public var body: some View {
         ZStack{
@@ -71,7 +71,11 @@ public struct StartRunView: View {
             .padding(.bottom, 20)
         }
         .fullScreenCover(isPresented: $isPaused){
-            StopRunView(viewModel: viewModel, isPaused: $isPaused)
+            StopRunView(
+                viewModel: viewModel,
+                isPaused: $isPaused,
+                isRunning: $isRunning
+            )
         }
     }
     
@@ -94,5 +98,5 @@ public struct StartRunView: View {
 }
 
 #Preview {
-    StartRunView(viewModel: RunViewModel())
+    StartRunView(viewModel: RunViewModel(), isRunning: .constant(true))
 }

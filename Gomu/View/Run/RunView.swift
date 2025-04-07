@@ -113,7 +113,7 @@ public struct RunView: View {
             SettingsView()
         }
         .fullScreenCover(isPresented: $isRunning){
-            StartRunView(viewModel: viewModel)
+            StartRunView(viewModel: viewModel, isRunning: $isRunning)
         }
     }
 }

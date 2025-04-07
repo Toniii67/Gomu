@@ -7,11 +7,14 @@
 
 import SwiftUI
 import MapKit
+import Foundation
 
 struct StopRunView: View {
     @ObservedObject var viewModel: RunViewModel
     @Binding var isPaused: Bool
+    @Binding var isRunning: Bool
     @Environment(\.dismiss) var dismiss
+    @State var dialog: String = "Ayo! dikit lagi! Kamu pasti bisa!"
 
     var body: some View {
         ZStack{
@@ -22,11 +25,10 @@ struct StopRunView: View {
                 .scaledToFill()
                 .ignoresSafeArea(.all)
             VStack{
-                MapView()
-//                MapView()
-                RunDetails(viewModel: viewModel)
+                MapView(locationManager: viewModel.locationManager)
+                RunDetails(locationManager: viewModel.locationManager, viewModel: viewModel)
                     .ignoresSafeArea()
-                //                        .padding(.top, 20)
+                
                 VStack{
                     Gauge(value: 2.5, in: 0...5){
                     }
@@ -37,8 +39,40 @@ struct StopRunView: View {
                             .opacity(0.2)
                     })
                     .padding()
-                    ActionButtons(isPaused: $isPaused,
-                                  viewModel: viewModel)
+//                    ActionButtons(isPaused: $isPaused,
+//                                  viewModel: viewModel)
+                    HStack{
+                        // Tombol Stop
+                        Button(action:{
+                            print("Stop")
+                            dismiss()
+                            self.isRunning = false
+                        }){
+                            Image(systemName: "stop.fill")
+                                .resizable()
+                                .frame(width: 24, height: 24)
+                                .padding(20)
+                                .foregroundStyle(Color.white)
+                                .background(Color.black)
+                                .clipShape(.capsule)
+                        }.padding(.horizontal)
+                        // Tombol Resume
+                        Button(action:{
+                            print("resume")
+                            self.isPaused = false
+                            viewModel.resumeRun()
+                        }){
+                            Image(systemName: "play.fill")
+                                .resizable()
+                                .frame(width: 24, height: 24)
+                                .padding(20)
+                                .foregroundStyle(Color.white)
+                                .background(Color("secondary"))
+                                .clipShape(.circle)
+                        }
+                        .padding(.horizontal)
+                    }
+                    .padding(.horizontal)
                 }
                 .padding(.horizontal)
                 HStack{
@@ -47,11 +81,14 @@ struct StopRunView: View {
                         .scaledToFit()
                         .frame(width: 284)
                         .position(x:70, y:200)
-                    Image("ChatBallonSecond")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 250)
-                        .position(x:20, y:80)
+                    ZStack{
+                        Image("ChatBallonSecond")
+                            .resizable()
+                            .scaledToFit()
+                        Text(dialog)
+                    }
+                    .frame(width: 250)
+                    .position(x:20, y:80)
                 }
                 Spacer()
             }
@@ -62,12 +99,16 @@ struct StopRunView: View {
 
 struct RunDetails: View{
 //    var runData: RunModel
-    var viewModel: RunViewModel
+    @ObservedObject var locationManager: LocationManager
+    @ObservedObject var viewModel: RunViewModel
     var body: some View{
         VStack{
             HStack{
                 InformationText(label: "Time",
-                                data: DateComponentsFormatter().string(from: viewModel.duration) ?? "00:00",
+                                data: (
+                                    ((viewModel.duration >= 60 ? DateComponentsFormatter().string(from: viewModel.duration)
+                                      : (viewModel.duration >= 10 ? "00:\(Int(viewModel.duration))" : "00:0\(Int(viewModel.duration))" )) ?? "00:00")
+                                ),
                                 fontSize: 30
                                 )
                 Spacer()
@@ -78,9 +119,9 @@ struct RunDetails: View{
                                 fontSize: 30)
             }
             HStack{
-                InformationText(label: "Elevation", data: "21", fontSize: 30)
+                InformationText(label: "Elevation", data: viewModel.elevation.formatted(), fontSize: 30)
                 Spacer()
-                InformationText(label: "BPM", data: viewModel.bpm.formatted(), fontSize: 30)
+                InformationText(label: "BPM", data: String(format: "%.2f",viewModel.bpm.formatted()), fontSize: 30)
                 Spacer()
                 InformationText(label: "Calories", data: viewModel.calories.formatted(), fontSize: 30)
             }
@@ -90,57 +131,21 @@ struct RunDetails: View{
     }
 }
 
-struct ActionButtons: View{
-    @Binding var isPaused: Bool
-    @ObservedObject var viewModel: RunViewModel
-    var body: some View{
-        HStack{
-            Button(action:{
-                print("Stop")
-            }){
-                Image(systemName: "stop.fill")
-                    .resizable()
-                    .frame(width: 24, height: 24)
-                    .padding(20)
-                    .foregroundStyle(Color.white)
-                    .background(Color.black)
-                    .clipShape(.capsule)
-            }.padding(.horizontal)
-            Button(action:{
-                print("resume")
-                isPaused = false
-                viewModel.resumeRun()
-            }){
-                Image(systemName: "play.fill")
-                    .resizable()
-                    .frame(width: 24, height: 24)
-                    .padding(20)
-                    .foregroundStyle(Color.white)
-                    .background(Color("secondary"))
-                    .clipShape(.circle)
-            }
-            .padding(.horizontal)
-        }
-        .padding(.horizontal)
-    }
-}
-
 struct MapView: View {
-    @StateObject private var locationManager = LocationManager()
+    @ObservedObject var locationManager: LocationManager
     let initPosition = CLLocationCoordinate2D(latitude: -6.1754, longitude: 106.8272)
-
     var body: some View {
         Map(position: .constant(
             MapCameraPosition.region(
                 MKCoordinateRegion(
-                    center: locationManager.locations.last ?? initPosition,
+                    center: locationManager.coordinates.last ?? initPosition,
                     span: MKCoordinateSpan(latitudeDelta: 0.001, longitudeDelta: 0.001)
                 )
             )
         )){
             Annotation(
                 "Your Location",
-                coordinate: locationManager.locations.last ?? initPosition
+                coordinate: locationManager.coordinates.last ?? initPosition
             ){
                 Image(systemName: "figure.walk")
                     .resizable()
@@ -151,8 +156,8 @@ struct MapView: View {
                     .background(Color.red)
                     .clipShape(Circle())
             }
-            MapPolyline(coordinates: locationManager.locations, contourStyle: .straight)
-                .stroke(.blue, lineWidth: 2)
+            MapPolyline(coordinates: locationManager.coordinates, contourStyle: .straight)
+                .stroke(.blue, lineWidth: 5)
         }
         .preferredColorScheme(.light)
     }
@@ -162,6 +167,7 @@ struct MapView: View {
 #Preview {
     StopRunView(
         viewModel: RunViewModel(),
-        isPaused: .constant(false)
+        isPaused: .constant(false),
+        isRunning: .constant(true)
     )
 }
