@@ -6,67 +6,79 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct StopRunView: View {
-//    @State var runData: RunModel
-//    @State var targetData:
+    @ObservedObject var viewModel: RunViewModel
+    @Binding var isPaused: Bool
+    @State private var navigateToReport = false
+    @Binding var selectedTab: Int
+    
     var body: some View {
-        VStack{
-            Text("Map")
-                .frame(height: 500)
-            ZStack{
-                Color("primary")
-                    .ignoresSafeArea(.all)
-                VStack{
-                    Spacer()
-                    Image("BackgroundRun")
-                        .resizable()
-                        .scaledToFill()
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        NavigationStack{
+            VStack{
+                Text("Map")
+                    .frame(height: 500)
+                ZStack{
+                    Color("primary")
                         .ignoresSafeArea(.all)
-                }
-                VStack{
-                    RunDetails()
-                    Gauge(value: 2.1, in: 0...5){
-                        
+                    VStack{
+                        Spacer()
+                        Image("BackgroundRun")
+                            .resizable()
+                            .scaledToFill()
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            .ignoresSafeArea(.all)
                     }
-                    .tint(Color("secondary"))
-                    .padding()
+                    VStack{
+                        RunDetails()
+                        Gauge(value: 2.1, in: 0...5){
+                            
+                        }
+                        .tint(Color("secondary"))
+                        .padding()
+                        
+                        HStack{
+                            Button(action: {
+                                print("resume")
+                                isPaused = false
+                                viewModel.resumeRun()
+                            }){
+                                Image(systemName: "play")
+                                    .resizable()
+                                    .frame(width: 24, height: 24)
+                                    .padding(30)
+                                    .foregroundColor(.white)
+                                    .background(Color("secondary"))
+                                    .clipShape(Circle())
+                            }
+                            
+                            
+                            
+                            Button(action: {
+                                print("stop")
+                                viewModel.stopRun()
+                                selectedTab = 2
+                            }){
+                                Image(systemName: "stop")
+                                    .resizable()
+                                    .frame(width: 24, height: 24)
+                                    .padding(30)
+                                    .foregroundColor(.white)
+                                    .background(Color("secondary"))
+                                    .clipShape(Circle())
+                            }
+                        }
+                    }.padding(.bottom, 30)
                     
-                    HStack{
-                        Button(action: {
-                            print("pause")
-                        }){
-                            Image(systemName: "pause")
-                                .resizable()
-                                .frame(width: 24, height: 24)
-                                .padding(30)
-                                .foregroundColor(.white)
-                                .background(Color("secondary"))
-                                .clipShape(Circle())
-                        }
-                        
-                        Button(action: {
-                            print("stop")
-                        }){
-                            Image(systemName: "stop")
-                                .resizable()
-                                .frame(width: 24, height: 24)
-                                .padding(30)
-                                .foregroundColor(.white)
-                                .background(Color("secondary"))
-                                .clipShape(Circle())
-                        }
-                    }
-                }.padding(.bottom, 30)
-                
+                }
             }
         }
+        
     }
 }
 
 struct RunDetails: View{
-//    var runData: RunModel
     var body: some View{
         VStack{
             HStack{
@@ -85,18 +97,28 @@ struct RunDetails: View{
     }
 }
 
-//struct ActionButtons: View{
-//    var body: some View{
-//        HStack{
-//            Button(action:{
-//                print("Stop")
-//            }){
-//                Text("Stop")
-//            }
-//        }
-//    }
-//}
-
 #Preview {
-    StopRunView()
+    struct PreviewWrapper: View {
+        @State private var selectedTab = 1  // Tambahkan State untuk selectedTab
+        
+        var body: some View {
+            do {
+                let container = try ModelContainer(for: RunModel.self)
+                return AnyView(
+                    StopRunView(
+                        viewModel: RunViewModel(context: container.mainContext),
+                        isPaused: .constant(false),
+                        selectedTab: $selectedTab  // Pastikan Binding digunakan di sini
+                    )
+                    .modelContainer(container)
+                )
+            } catch {
+                return AnyView(Text("Preview Error: \(error.localizedDescription)"))
+            }
+        }
+    }
+    
+    return PreviewWrapper()
 }
+
+

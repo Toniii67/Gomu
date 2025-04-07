@@ -6,12 +6,13 @@
 //
 
 import SwiftUI
+import SwiftData
 
 
 public struct StartRunView: View {
     @ObservedObject var viewModel: RunViewModel
     @State private var isPaused: Bool = false
-//    @Binding var isRunning: Bool
+    @Binding var selectedTab: Int
     
     public var body: some View {
         ZStack{
@@ -45,7 +46,7 @@ public struct StartRunView: View {
                     Image("ChatBallon")
                         .resizable()
                         .scaledToFit()
-                        .frame(width: 241, height: 158)
+                        .frame(width: 250, height: 160)
                     
                     Image("Gomu")
                         .resizable()
@@ -71,8 +72,9 @@ public struct StartRunView: View {
             .padding(.bottom, 20)
         }
         .fullScreenCover(isPresented: $isPaused){
-            StopRunView(viewModel: viewModel, isPaused: $isPaused)
+            StopRunView(viewModel: viewModel, isPaused: $isPaused, selectedTab: $selectedTab)
         }
+        
     }
     
     private func formatTime(_ time: TimeInterval) -> String {
@@ -94,5 +96,14 @@ public struct StartRunView: View {
 }
 
 #Preview {
-    StartRunView(viewModel: RunViewModel())
+    struct PreviewWrapper: View {
+        @State private var selectedTab = 1 
+
+        var body: some View {
+            StartRunView(viewModel: RunViewModel(), selectedTab: $selectedTab)
+                .modelContainer(try! ModelContainer(for: RunModel.self))
+        }
+    }
+    
+    return PreviewWrapper()
 }
