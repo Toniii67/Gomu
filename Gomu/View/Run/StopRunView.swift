@@ -6,12 +6,15 @@
 //
 
 import SwiftUI
+import SwiftData
 import MapKit
 import Foundation
 
 struct StopRunView: View {
+    @State private var navigateToReport = false
     @ObservedObject var viewModel: RunViewModel
     @Binding var isPaused: Bool
+    @Binding var selectedTab: Int
     @Binding var isRunning: Bool
     @Environment(\.dismiss) var dismiss
     @State var dialog: String = "Ayo! dikit lagi! Kamu pasti bisa!"
@@ -163,11 +166,29 @@ struct MapView: View {
     }
 }
 
-
 #Preview {
-    StopRunView(
-        viewModel: RunViewModel(),
-        isPaused: .constant(false),
-        isRunning: .constant(true)
-    )
+    struct PreviewWrapper: View {
+        @State private var selectedTab = 1  // Tambahkan State untuk selectedTab
+        
+        var body: some View {
+            do {
+                let container = try ModelContainer(for: RunModel.self)
+                return AnyView(
+                    StopRunView(
+                        viewModel: RunViewModel(context: container.mainContext),
+                        isPaused: .constant(false),
+                        selectedTab: $selectedTab,  // Pastikan Binding digunakan di sini
+                        isRunning: .constant(true)
+                    )
+                    .modelContainer(container)
+                )
+            } catch {
+                return AnyView(Text("Preview Error: \(error.localizedDescription)"))
+            }
+        }
+    }
+    
+    return PreviewWrapper()
 }
+
+

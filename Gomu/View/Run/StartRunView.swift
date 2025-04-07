@@ -6,11 +6,13 @@
 //
 
 import SwiftUI
+import SwiftData
 
 
 public struct StartRunView: View {
     @ObservedObject var viewModel: RunViewModel
     @State private var isPaused: Bool = false
+    @Binding var selectedTab: Int
     @Binding var isRunning: Bool
     
     public var body: some View {
@@ -45,7 +47,7 @@ public struct StartRunView: View {
                     Image("ChatBallon")
                         .resizable()
                         .scaledToFit()
-                        .frame(width: 241, height: 158)
+                        .frame(width: 250, height: 160)
                     
                     Image("Gomu")
                         .resizable()
@@ -74,9 +76,11 @@ public struct StartRunView: View {
             StopRunView(
                 viewModel: viewModel,
                 isPaused: $isPaused,
+                selectedTab: $selectedTab,
                 isRunning: $isRunning
             )
         }
+        
     }
     
     private func formatTime(_ time: TimeInterval) -> String {
@@ -98,5 +102,14 @@ public struct StartRunView: View {
 }
 
 #Preview {
-    StartRunView(viewModel: RunViewModel(), isRunning: .constant(true))
+    struct PreviewWrapper: View {
+        @State private var selectedTab = 1 
+
+        var body: some View {
+            StartRunView(viewModel: RunViewModel(), selectedTab: $selectedTab, isRunning: .constant(true))
+                .modelContainer(try! ModelContainer(for: RunModel.self))
+        }
+    }
+    
+    return PreviewWrapper()
 }

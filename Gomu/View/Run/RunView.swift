@@ -13,12 +13,17 @@
  alternatif solusi adalah run ke start modal, sisanya navigation ntr back nya pake dismiss jdi cmn ada 1 modal
  **/
 import SwiftUI
+import SwiftData
 
 
 public struct RunView: View {
-    @StateObject private var viewModel = RunViewModel()
+    //    @StateObject private var viewModel = RunViewModel()
+    @ObservedObject var viewModel: RunViewModel
     @State private var isShowingSettings = false
     @State private var isRunning = false
+    @StateObject private var chatViewModel = ChatViewModel()
+    
+    @Binding var selectedTab: Int
     
     public var body: some View {
         ZStack{
@@ -54,11 +59,78 @@ public struct RunView: View {
                 }
                 .padding()
                 
+                ////                if !chatViewModel.isFinished {
+                ////                    VStack {
+                ////                        Image("ChatBallon")
+                ////                            .resizable()
+                ////                            .scaledToFit()
+                ////                            .frame(width: 250, height: 250)
+                ////                            .overlay(
+                ////                                GeometryReader { geometry in
+                ////                                    Text(chatViewModel.currentMessage)
+                ////                                        .font(.headline)
+                ////                                        .fontWeight(.semibold)
+                ////                                        .multilineTextAlignment(.center)
+                ////                                        .minimumScaleFactor(0.5)
+                ////                                        .lineLimit(3)
+                ////                                        .foregroundColor(Color("message"))
+                ////                                        .frame(width: 230, height: 110)
+                ////                                        .position(x: 127, y: 104)
+                ////                                }
+                ////                            )
+                ////                    }
+                ////                }
+                //
+                //                ZStack {
+                //                    Image("ChatBallon")
+                //                        .resizable()
+                //                        .scaledToFit()
+                //                        .frame(width: 250, height: 250)
+                //                        .overlay(
+                //                            GeometryReader { geometry in
+                //                                Text(chatViewModel.currentMessage)
+                //                                    .font(.headline)
+                //                                    .fontWeight(.semibold)
+                //                                    .multilineTextAlignment(.center)
+                //                                    .minimumScaleFactor(0.5)
+                //                                    .lineLimit(3)
+                //                                    .foregroundColor(Color("message"))
+                //                                    .frame(width: 230, height: 110)
+                //                                    .position(x: 127, y: 104)
+                //                            }
+                //                        )
+                //                        .opacity(chatViewModel.isFinished ? 0 : 1)
+                //                        .animation(.easeInOut(duration: 0.5), value: chatViewModel.isFinished)
+                //                }
+                //
+                //
+                //                Image("Gomu")
+                //                    .resizable()
+                //                    .scaledToFit()
+                //                    .frame(height: 250)
+                //
+                //                Spacer()
+                
+                
                 VStack{
                     Image("ChatBallon")
                         .resizable()
                         .scaledToFit()
                         .frame(width: 250, height: 250)
+                        .overlay(
+                            GeometryReader { geometry in
+                                Text(chatViewModel.currentMessage)
+                                    .font(.headline)
+                                    .fontWeight(.semibold)
+                                    .multilineTextAlignment(.center)
+                                    .minimumScaleFactor(0.5)
+                                    .lineLimit(3)
+                                    .foregroundColor(Color("message"))
+                                    .frame(width: 230, height: 110)
+                                //                                    .background(Color.green)
+                                    .position(x: 127, y: 104)
+                            }
+                        )
                     
                     Image("Gomu")
                         .resizable()
@@ -113,11 +185,30 @@ public struct RunView: View {
             SettingsView()
         }
         .fullScreenCover(isPresented: $isRunning){
-            StartRunView(viewModel: viewModel, isRunning: $isRunning)
+            StartRunView(viewModel: viewModel, selectedTab: $selectedTab, isRunning: $isRunning)
         }
     }
 }
 
 #Preview {
-    RunView()
+    struct PreviewWrapper: View {
+        @State private var selectedTab = 1
+        
+        var body: some View {
+            do {
+                let container = try ModelContainer(for: RunModel.self)
+                return AnyView(
+                    RunView(
+                        viewModel: RunViewModel(context: container.mainContext),
+                        selectedTab: $selectedTab
+                    )
+                    .modelContainer(container)
+                )
+            } catch {
+                return AnyView(Text("Preview Error: \(error.localizedDescription)"))
+            }
+        }
+    }
+    
+    return PreviewWrapper()
 }
