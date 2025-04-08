@@ -19,9 +19,7 @@ class RunViewModel: ObservableObject {
     @Published var elevation: Double = 0.0
     @Published var locationManager: LocationManager = LocationManager()
     private var timer: Timer?
-    
     private var modelContext: ModelContext?
-    private var timer: Timer?
 
     init() {}
 

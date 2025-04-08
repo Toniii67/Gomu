@@ -49,6 +49,7 @@ struct StopRunView: View {
                         Button(action:{
                             print("Stop")
                             dismiss()
+                            viewModel.stopRun()
                             self.isRunning = false
                         }){
                             Image(systemName: "stop.fill")
