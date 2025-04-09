@@ -5,121 +5,145 @@
 //  Created by Franco Antonio Pranata on 25/03/25.
 //
 
+//
+//import SwiftUI
+//import SwiftData
+//
+//struct MainTabView: View {
+//    @Environment(\.modelContext) private var modelContext
+//    @State private var selectedTab = 1
+//    @StateObject private var viewModel: RunViewModel
+//
+//    init() {
+//        _viewModel = StateObject(wrappedValue: RunViewModel())
+//    }
+//    var body: some View {
+//        ZStack {
+//            Color("primary").ignoresSafeArea(.all)
+//
+//            VStack {
+//                Spacer()
+//                if selectedTab == 0 {
+//                    HomeView()
+//                } else if selectedTab == 1 {
+//                    RunView(viewModel: viewModel, selectedTab: $selectedTab)
+//                } else if selectedTab == 2 {
+//                    ReportView(viewModel: viewModel)
+//                }
+//                Spacer()
+//            }
+//
+//            VStack {
+//                Spacer()
+//                CustomTabBar(selectedTab: $selectedTab)
+//            }
+//            .edgesIgnoringSafeArea(.bottom)
+//        }.onAppear {
+//            viewModel.setContext(modelContext)
+//        }
+//    }
+//}
+//
+//struct CustomTabBar: View {
+//    @Binding var selectedTab: Int
+//
+//    var body: some View {
+//        ZStack {
+//            RoundedRectangle(cornerRadius: 25)
+//                .fill(Color("primary"))
+//                .frame(height: 75)
+//
+//            HStack {
+//                Button(action: { selectedTab = 0 }) {
+//                    Image(systemName: "house.fill")
+//                        .font(.title)
+//                        .foregroundColor(selectedTab == 0 ? Color("white") : Color("secondary"))
+//                }
+//
+//                Spacer()
+//
+//                Button(action: { selectedTab = 1 }) {
+//                    Image(systemName: "figure.run")
+//                        .font(.title)
+//                        .foregroundColor(Color("white"))
+//                        .padding()
+//                        .background(Color("secondary"))
+//                        .clipShape(Circle())
+//                }
+//                .offset(y: -20)
+//
+//                Spacer()
+//
+//                Button(action: { selectedTab = 2 }) {
+//                    Image(systemName: "chart.bar.fill")
+//                        .font(.title)
+//                        .foregroundColor(selectedTab == 2 ? Color("white") : Color("secondary"))
+//                }
+//            }
+//            .padding(.horizontal, 60)
+//        }
+//    }
+//}
+//
+//#Preview {
+//    MainTabView()
+//        .modelContainer(try! ModelContainer(for: RunModel.self))
+//}
 
 import SwiftUI
 import SwiftData
 
 struct MainTabView: View {
     @Environment(\.modelContext) private var modelContext
-    @State private var selectedTab = 1
     @StateObject private var viewModel: RunViewModel
+    @State private var selectedTab = 1 // 1 = RunView sebagai default
     
     init() {
         _viewModel = StateObject(wrappedValue: RunViewModel())
+        
+        let tabBarAppearance = UITabBarAppearance()
+        tabBarAppearance.configureWithOpaqueBackground()
+        tabBarAppearance.backgroundColor = UIColor(named: "primary")
+        
+        let itemAppearance = UITabBarItemAppearance()
+        itemAppearance.normal.iconColor = UIColor(named: "secondary")
+        itemAppearance.normal.titleTextAttributes = [.foregroundColor: UIColor(named: "secondary") ?? .gray]
+        itemAppearance.selected.iconColor = UIColor(named: "secondary")
+        itemAppearance.selected.titleTextAttributes = [.foregroundColor: UIColor(named: "secondary") ?? .gray]
+        
+        tabBarAppearance.stackedLayoutAppearance = itemAppearance
+        
+        UITabBar.appearance().standardAppearance = tabBarAppearance
+        if #available(iOS 15.0, *) {
+            UITabBar.appearance().scrollEdgeAppearance = tabBarAppearance
+        }
     }
+    
     var body: some View {
-        ZStack {
-            Color("primary").ignoresSafeArea(.all)
-            
-            VStack {
-                Spacer()
-                if selectedTab == 0 {
-                    HomeView()
-                } else if selectedTab == 1 {
-                    RunView(viewModel: viewModel, selectedTab: $selectedTab)
-                } else if selectedTab == 2 {
-                    ReportView(viewModel: viewModel)
+        TabView(selection: $selectedTab) {
+            HomeView()
+                .tabItem {
+                    Label("Home", systemImage: "house.fill")
                 }
-                Spacer()
-            }
+                .tag(0)
             
-            VStack {
-                Spacer()
-                CustomTabBar(selectedTab: $selectedTab)
-            }
-            .edgesIgnoringSafeArea(.bottom)
-        }.onAppear {
+            RunView(viewModel: viewModel, selectedTab: $selectedTab)
+                .tabItem {
+                    Label("Run", systemImage: "figure.run")
+                }
+                .tag(1)
+            
+            ReportView(viewModel: viewModel)
+                .tabItem {
+                    Label("Activity", systemImage: "chart.bar.fill")
+                }
+                .tag(2)
+        }
+        .onAppear {
             viewModel.setContext(modelContext)
         }
     }
 }
-
-
-
-
-struct CustomTabBar: View {
-    @Binding var selectedTab: Int
-    
-    var body: some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: 25)
-                .fill(Color("primary"))
-                .frame(height: 75)
-            
-            HStack {
-                Button(action: { selectedTab = 0 }) {
-                    Image(systemName: "house.fill")
-                        .font(.title)
-                        .foregroundColor(selectedTab == 0 ? Color("white") : Color("secondary"))
-                }
-                
-                Spacer()
-                
-                Button(action: { selectedTab = 1 }) {
-                    Image(systemName: "figure.run")
-                        .font(.title)
-                        .foregroundColor(Color("white"))
-                        .padding()
-                        .background(Color("secondary"))
-                        .clipShape(Circle())
-                }
-                .offset(y: -20)
-                
-                Spacer()
-                
-                Button(action: { selectedTab = 2 }) {
-                    Image(systemName: "chart.bar.fill")
-                        .font(.title)
-                        .foregroundColor(selectedTab == 2 ? Color("white") : Color("secondary"))
-                }
-            }
-            .padding(.horizontal, 60)
-        }
-    }
-}
-//
-//struct MainTabView: View {
-//    @Environment(\.modelContext) private var modelContext
-//    @StateObject private var viewModel: RunViewModel = RunViewModel()
-//    
-//    var body: some View {
-//        TabView {
-//            HomeView()
-//                .tabItem {
-//                    Image(systemName: "house.fill")
-//                    Text("Home")
-//                }
-//                .tag(0)
-//            
-//            RunView(viewModel: viewModel, selectedTab: .constant(1)) // selectedTab diabaikan di sini
-//                .tabItem {
-//                    Image(systemName: "figure.run")
-//                    Text("Run")
-//                }
-//                .tag(1)
-//            
-//            ReportView(viewModel: viewModel)
-//                .tabItem {
-//                    Image(systemName: "chart.bar.fill")
-//                    Text("Report")
-//                }
-//                .tag(2)
-//        }
-//        .onAppear {
-//            viewModel.setContext(modelContext)
-//        }
-//    }
-//}
 
 #Preview {
     MainTabView()
