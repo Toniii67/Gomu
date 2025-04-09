@@ -12,21 +12,74 @@
  
  alternatif solusi adalah run ke start modal, sisanya navigation ntr back nya pake dismiss jdi cmn ada 1 modal
  **/
+
+////                if !chatViewModel.isFinished {
+////                    VStack {
+////                        Image("ChatBallon")
+////                            .resizable()
+////                            .scaledToFit()
+////                            .frame(width: 250, height: 250)
+////                            .overlay(
+////                                GeometryReader { geometry in
+////                                    Text(chatViewModel.currentMessage)
+////                                        .font(.headline)
+////                                        .fontWeight(.semibold)
+////                                        .multilineTextAlignment(.center)
+////                                        .minimumScaleFactor(0.5)
+////                                        .lineLimit(3)
+////                                        .foregroundColor(Color("message"))
+////                                        .frame(width: 230, height: 110)
+////                                        .position(x: 127, y: 104)
+////                                }
+////                            )
+////                    }
+////                }
+//
+//                ZStack {
+//                    Image("ChatBallon")
+//                        .resizable()
+//                        .scaledToFit()
+//                        .frame(width: 250, height: 250)
+//                        .overlay(
+//                            GeometryReader { geometry in
+//                                Text(chatViewModel.currentMessage)
+//                                    .font(.headline)
+//                                    .fontWeight(.semibold)
+//                                    .multilineTextAlignment(.center)
+//                                    .minimumScaleFactor(0.5)
+//                                    .lineLimit(3)
+//                                    .foregroundColor(Color("message"))
+//                                    .frame(width: 230, height: 110)
+//                                    .position(x: 127, y: 104)
+//                            }
+//                        )
+//                        .opacity(chatViewModel.isFinished ? 0 : 1)
+//                        .animation(.easeInOut(duration: 0.5), value: chatViewModel.isFinished)
+//                }
+//
+//
+//                Image("Gomu")
+//                    .resizable()
+//                    .scaledToFit()
+//                    .frame(height: 250)
+//
+//                Spacer()
+
+
 import SwiftUI
 import SwiftData
-
+import UIKit
 
 public struct RunView: View {
-    //    @StateObject private var viewModel = RunViewModel()
     @ObservedObject var viewModel: RunViewModel
     @State private var isShowingSettings = false
     @State private var isRunning = false
     @StateObject private var chatViewModel = ChatViewModel()
     
     @Binding var selectedTab: Int
-    
+
     public var body: some View {
-        ZStack{
+        ZStack {
             Color("primary")
                 .ignoresSafeArea(.all)
             
@@ -36,8 +89,8 @@ public struct RunView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .ignoresSafeArea(.all)
             
-            VStack{
-                HStack{
+            VStack {
+                HStack {
                     Button(action: {
                         print("person")
                     }) {
@@ -59,60 +112,7 @@ public struct RunView: View {
                 }
                 .padding()
                 
-                ////                if !chatViewModel.isFinished {
-                ////                    VStack {
-                ////                        Image("ChatBallon")
-                ////                            .resizable()
-                ////                            .scaledToFit()
-                ////                            .frame(width: 250, height: 250)
-                ////                            .overlay(
-                ////                                GeometryReader { geometry in
-                ////                                    Text(chatViewModel.currentMessage)
-                ////                                        .font(.headline)
-                ////                                        .fontWeight(.semibold)
-                ////                                        .multilineTextAlignment(.center)
-                ////                                        .minimumScaleFactor(0.5)
-                ////                                        .lineLimit(3)
-                ////                                        .foregroundColor(Color("message"))
-                ////                                        .frame(width: 230, height: 110)
-                ////                                        .position(x: 127, y: 104)
-                ////                                }
-                ////                            )
-                ////                    }
-                ////                }
-                //
-                //                ZStack {
-                //                    Image("ChatBallon")
-                //                        .resizable()
-                //                        .scaledToFit()
-                //                        .frame(width: 250, height: 250)
-                //                        .overlay(
-                //                            GeometryReader { geometry in
-                //                                Text(chatViewModel.currentMessage)
-                //                                    .font(.headline)
-                //                                    .fontWeight(.semibold)
-                //                                    .multilineTextAlignment(.center)
-                //                                    .minimumScaleFactor(0.5)
-                //                                    .lineLimit(3)
-                //                                    .foregroundColor(Color("message"))
-                //                                    .frame(width: 230, height: 110)
-                //                                    .position(x: 127, y: 104)
-                //                            }
-                //                        )
-                //                        .opacity(chatViewModel.isFinished ? 0 : 1)
-                //                        .animation(.easeInOut(duration: 0.5), value: chatViewModel.isFinished)
-                //                }
-                //
-                //
-                //                Image("Gomu")
-                //                    .resizable()
-                //                    .scaledToFit()
-                //                    .frame(height: 250)
-                //
-                //                Spacer()
-                
-                
-                VStack{
+                VStack {
                     Image("ChatBallon")
                         .resizable()
                         .scaledToFit()
@@ -127,7 +127,6 @@ public struct RunView: View {
                                     .lineLimit(3)
                                     .foregroundColor(Color("message"))
                                     .frame(width: 230, height: 110)
-                                //                                    .background(Color.green)
                                     .position(x: 127, y: 104)
                             }
                         )
@@ -140,11 +139,13 @@ public struct RunView: View {
                     Spacer()
                 }
                 
-                ZStack{
+                ZStack {
+                    // 🟢 Start Button with Haptic
                     Button(action: {
+                        triggerMediumHaptic()
                         isRunning = true
                         viewModel.startRun()
-                    }){
+                    }) {
                         Text("Start")
                             .font(.system(.title2, design: .rounded))
                             .foregroundColor(.white)
@@ -154,7 +155,6 @@ public struct RunView: View {
                             .background(Color("secondary"))
                             .cornerRadius(25)
                     }
-                    
                     
                     Button(action: {
                         print("music")
@@ -167,9 +167,8 @@ public struct RunView: View {
                             .background(Color.white)
                             .clipShape(Circle())
                             .shadow(radius: 4)
-                    }.padding(.leading, 250)
-                    
-                    
+                    }
+                    .padding(.leading, 250)
                 }
                 
                 Text("Set Goal")
@@ -184,9 +183,16 @@ public struct RunView: View {
         .fullScreenCover(isPresented: $isShowingSettings) {
             SettingsView()
         }
-        .fullScreenCover(isPresented: $isRunning){
+        .fullScreenCover(isPresented: $isRunning) {
             StartRunView(viewModel: viewModel, selectedTab: $selectedTab)
         }
+    }
+
+    // MARK: - Haptic Function
+    private func triggerMediumHaptic() {
+        let generator = UIImpactFeedbackGenerator(style: .medium)
+        generator.prepare()
+        generator.impactOccurred()
     }
 }
 

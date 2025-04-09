@@ -7,7 +7,7 @@
 
 import SwiftUI
 import SwiftData
-
+import UIKit
 
 public struct StartRunView: View {
     @ObservedObject var viewModel: RunViewModel
@@ -56,9 +56,9 @@ public struct StartRunView: View {
                 
                 Button(action: {
                     print("pause")
+                    triggerMediumHaptic()
                     viewModel.pauseRun()
                     isPaused = true
-                    
                 }){
                     Image(systemName: "pause")
                         .resizable()
@@ -74,7 +74,13 @@ public struct StartRunView: View {
         .fullScreenCover(isPresented: $isPaused){
             StopRunView(viewModel: viewModel, isPaused: $isPaused, selectedTab: $selectedTab)
         }
-        
+    }
+    
+    // MARK: - Haptic Function
+    private func triggerMediumHaptic() {
+        let generator = UIImpactFeedbackGenerator(style: .medium)
+        generator.prepare()
+        generator.impactOccurred()
     }
     
     private func formatTime(_ time: TimeInterval) -> String {
