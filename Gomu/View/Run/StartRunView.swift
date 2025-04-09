@@ -11,9 +11,10 @@ import SwiftData
 
 public struct StartRunView: View {
     @ObservedObject var viewModel: RunViewModel
-    @State private var isPaused: Bool = false
+//    @State private var isPaused: Bool = false
     @Binding var selectedTab: Int
-    @Binding var isRunning: Bool
+//    @Binding var isRunning: Bool
+    @Binding var path: NavigationPath
     
     public var body: some View {
         ZStack{
@@ -55,8 +56,9 @@ public struct StartRunView: View {
                 Button(action: {
                     print("pause")
                     viewModel.pauseRun()
-                    isPaused = true
-                    
+//                    isPaused = true
+                    self.viewModel.isRunning = false
+                    path.append("stopRun")
                 }){
                     Image(systemName: "pause")
                         .resizable()
@@ -69,13 +71,14 @@ public struct StartRunView: View {
             }
             .padding(.bottom, 20)
         }
-        .fullScreenCover(isPresented: $isPaused){
-            StopRunView(
-                viewModel: viewModel,
-                isPaused: $isPaused,
-                selectedTab: $selectedTab,
-                isRunning: $isRunning
-            )
+        .navigationBarBackButtonHidden(true)
+        .toolbar(.hidden, for: .navigationBar)
+        .onAppear {
+            print("StartRunView muncul")
+        }
+
+        .onDisappear {
+            print("StartRunView hilang")
         }
         
     }
@@ -98,15 +101,17 @@ public struct StartRunView: View {
     }
 }
 
-#Preview {
-    struct PreviewWrapper: View {
-        @State private var selectedTab = 1 
-
-        var body: some View {
-            StartRunView(viewModel: RunViewModel(), selectedTab: $selectedTab, isRunning: .constant(true))
-                .modelContainer(try! ModelContainer(for: RunModel.self))
-        }
-    }
-    
-    return PreviewWrapper()
-}
+//#Preview {
+//    struct PreviewWrapper: View {
+//        @State private var selectedTab = 1
+//
+//        var body: some View {
+//            StartRunView(viewModel: RunViewModel(), selectedTab: $selectedTab, path: $path
+////                         , isRunning: .constant(true)
+//            )
+//                .modelContainer(try! ModelContainer(for: RunModel.self))
+//        }
+//    }
+//    
+//    return PreviewWrapper()
+//}

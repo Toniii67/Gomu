@@ -97,6 +97,9 @@ struct MainTabView: View {
     @Environment(\.modelContext) private var modelContext
     @StateObject private var viewModel: RunViewModel
     @State private var selectedTab = 1 // 1 = RunView sebagai default
+    @State private var path = NavigationPath()
+    @State private var isRunning = false
+
     
     init() {
         _viewModel = StateObject(wrappedValue: RunViewModel())
@@ -120,27 +123,39 @@ struct MainTabView: View {
     }
     
     var body: some View {
-        TabView(selection: $selectedTab) {
-            HomeView()
-                .tabItem {
-                    Label("Home", systemImage: "house.fill")
+        NavigationStack(path: $path) {
+            TabView(selection: $selectedTab) {
+                HomeView()
+                    .tabItem {
+                        Label("Home", systemImage: "house.fill")
+                    }
+                    .tag(0)
+                
+                RunView(viewModel: viewModel, path: $path, selectedTab: $selectedTab)
+                    .tabItem {
+                        Label("Run", systemImage: "figure.run")
+                    }
+                    .tag(1)
+                
+                ReportView(viewModel: viewModel)
+                    .tabItem {
+                        Label("Activity", systemImage: "chart.bar.fill")
+                    }
+                    .tag(2)
+            }
+            .onAppear {
+                viewModel.setContext(modelContext)
+            }
+            .navigationDestination(for: String.self) { destination in
+                switch destination {
+                case "startRun":
+                    StartRunView(viewModel: viewModel, selectedTab: $selectedTab, path: $path)
+                case "stopRun":
+                    StopRunView(viewModel: viewModel, selectedTab: $selectedTab, path: $path)
+                default:
+                    let _  = print("Error: No Route named: \(destination)")
                 }
-                .tag(0)
-            
-            RunView(viewModel: viewModel, selectedTab: $selectedTab)
-                .tabItem {
-                    Label("Run", systemImage: "figure.run")
-                }
-                .tag(1)
-            
-            ReportView(viewModel: viewModel)
-                .tabItem {
-                    Label("Activity", systemImage: "chart.bar.fill")
-                }
-                .tag(2)
-        }
-        .onAppear {
-            viewModel.setContext(modelContext)
+            }
         }
     }
 }
