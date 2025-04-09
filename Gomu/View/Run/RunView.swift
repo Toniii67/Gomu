@@ -229,6 +229,7 @@ public struct RunView: View {
         .onDisappear {
             chatViewModel.stopAudio()
         }
+        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
                 Button(action: {
@@ -239,6 +240,7 @@ public struct RunView: View {
                         .foregroundColor(.orange)
                 }
             }
+            
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button(action: {
                     isShowingSettings = true
@@ -250,13 +252,9 @@ public struct RunView: View {
             }
         }
         //            .navigationTitle("Run")
-        .navigationBarTitleDisplayMode(.inline)
         .fullScreenCover(isPresented: $isShowingSettings) {
             SettingsView()
         }
-        //            .fullScreenCover(isPresented: $isRunning) {
-        //                StartRunView(viewModel: viewModel, selectedTab: $selectedTab)
-        //            }
         .fullScreenCover(isPresented: $isShowingProfile) {
             ProfileView()
         }
@@ -264,26 +262,27 @@ public struct RunView: View {
 }
 
 
-//#Preview {
-//    struct PreviewWrapper: View {
-//        @State private var selectedTab = 1
-//        
-//        var body: some View {
-//            do {
-//                let container = try ModelContainer(for: RunModel.self)
-//                return AnyView(
-//                    RunView(
-//                        viewModel: RunViewModel(context: container.mainContext),
-//                        selectedTab: $selectedTab
-//                    )
-//                    .modelContainer(container)
-//                )
-//            } catch {
-//                return AnyView(Text("Preview Error: \(error.localizedDescription)"))
-//            }
-//        }
-//    }
-//    
-//    return PreviewWrapper()
-//}
+#Preview {
+    struct PreviewWrapper: View {
+        @State private var selectedTab = 1
+        @State var path = NavigationPath()
+        
+        var body: some View {
+            do {
+                let container = try ModelContainer(for: RunModel.self)
+                return AnyView(
+                    RunView(
+                        viewModel: RunViewModel(context: container.mainContext), path: $path,
+                        selectedTab: $selectedTab
+                    )
+                    .modelContainer(container)
+                )
+            } catch {
+                return AnyView(Text("Preview Error: \(error.localizedDescription)"))
+            }
+        }
+    }
+    
+    return PreviewWrapper()
+}
 

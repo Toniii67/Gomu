@@ -18,7 +18,7 @@ class RunViewModel: ObservableObject {
     @Published var calories: Int = 0
     @Published var elevation: Double = 0.0
     @Published var locationManager: LocationManager = LocationManager()
-    @Published var avgPage: String = "--"
+    @Published var avgPace: String = "--"
     private var date: Date = Date()
     private var healthManager: HealthManager = HealthManager()
     private var timer: Timer?
@@ -56,6 +56,7 @@ class RunViewModel: ObservableObject {
             DispatchQueue.main.async {
                 self?.distance = self?.locationManager.calculateTotalDistance() ?? 0.0
                 self?.calculatePace()
+                print(self?.avgPace)
             }
         }
         self.elevation = self.locationManager.calculateElevationGain()
@@ -89,21 +90,17 @@ class RunViewModel: ObservableObject {
     }
     
     func stopRun() {
+        print("trying stopping")
         timer?.invalidate()
+        print("done invalidate timer")
         timer = nil
+        print("done set timer to nil")
         isRunning = false
+        print("done set isRunning to false")
         locationManager.stopTracking()
+        print("done stopping location manager")
         healthManager.stopHealthKitUpdates()
-        
-//        let distanceInMiles = distance / 1.6
-//        var averagePace = "--"
-//        
-//        if distanceInMiles >= 1 {
-//            let paceInSeconds = duration / distanceInMiles
-//            let minutes = Int(paceInSeconds) / 60
-//            let seconds = Int(paceInSeconds) % 60
-//            averagePace = String(format: "%02d:%02d", minutes, seconds)
-//        }
+        print("done stopping healtkit")
 
         guard let context = modelContext else {
             print("No model context available")
@@ -111,8 +108,9 @@ class RunViewModel: ObservableObject {
         }
 
         let newRun = RunModel(
+            timestamp: date,
             duration: duration,
-            averagePace: avgPage,
+            averagePace: avgPace,
             distance: distance,
             elevation: elevation,
             bpm: bpm,
@@ -149,15 +147,22 @@ class RunViewModel: ObservableObject {
     }
     
     func calculatePace(){
-        let distanceInMiles = self.distance / 1.6
-        var averagePace = "--"
+//        var averagePace = "--"
+        if distance == 0 {
+            self.avgPace = "--"
+            return
+        }
         
+        let distanceInMiles = self.distance / 1.6
         let paceInSeconds = duration / distanceInMiles
         let minutes = Int(paceInSeconds) / 60
         let seconds = Int(paceInSeconds) % 60
-        averagePace = String(format: "%02d:%02d", minutes, seconds)
+        if minutes >= 60 {
+            self.avgPace = "--"
+            return
+        }
         
-        self.avgPage = averagePace
+        self.avgPace = String(format: "%02d:%02d", minutes, seconds)
     }
     
 }

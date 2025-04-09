@@ -24,10 +24,32 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate{
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let location = locations.last else { return }
-        DispatchQueue.main.async {
-            self.coordinates.append(location.coordinate)
-            self.elevations.append(location.altitude)
+        
+        guard location.horizontalAccuracy <= 50 else {
+           print("Lokasi diabaikan karena akurasi buruk: \(location.horizontalAccuracy)")
+           return
         }
+        
+        guard let lastCoord = self.coordinates.last else {
+            DispatchQueue.main.async {
+                self.coordinates.append(location.coordinate)
+                self.elevations.append(location.altitude)
+            }
+            return
+        }
+        
+        let lastLocation = CLLocation(latitude: lastCoord.latitude, longitude: lastCoord.longitude)
+            let distance = location.distance(from: lastLocation)
+
+            // Hanya tambahkan jika jarak antara lokasi masuk akal (misal < 40 meter)
+            if distance < 40 {
+                DispatchQueue.main.async {
+                    self.coordinates.append(location.coordinate)
+                    self.elevations.append(location.altitude)
+                }
+            } else {
+                print("Lokasi diabaikan karena lompat: \(distance) meter")
+            }
     }
     
     func startTracking() {

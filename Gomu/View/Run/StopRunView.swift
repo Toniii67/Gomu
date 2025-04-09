@@ -123,7 +123,7 @@ struct RunDetails: View{
                                 fontSize: 30
                                 )
                 Spacer()
-                InformationText(label: "Avg. Pace", data: viewModel.avgPage, fontSize: 30)
+                InformationText(label: "Avg. Pace", data: viewModel.avgPace, fontSize: 30)
                 Spacer()
                 InformationText(label: "Kilometres",
                                 data: String(format: "%.2f", viewModel.distance),
@@ -137,9 +137,8 @@ struct RunDetails: View{
                 Spacer()
                 InformationText(label: "Calories", data: viewModel.calories.formatted(), fontSize: 30)
             }
-            
-            
         }
+        .navigationBarBackButtonHidden(true)
     }
 }
 
@@ -175,29 +174,29 @@ struct MapView: View {
     }
 }
 
-//#Preview {
-//    struct PreviewWrapper: View {
-//        @State private var selectedTab = 1  // Tambahkan State untuk selectedTab
-//        
-//        var body: some View {
-//            do {
-//                let container = try ModelContainer(for: RunModel.self)
-//                return AnyView(
-//                    StopRunView(
-//                        viewModel: RunViewModel(context: container.mainContext),
-//                        isPaused: .constant(false),
-//                        selectedTab: $selectedTab  // Pastikan Binding digunakan di sini
-////                        isRunning: .constant(true)
-//                    )
-//                    .modelContainer(container)
-//                )
-//            } catch {
-//                return AnyView(Text("Preview Error: \(error.localizedDescription)"))
-//            }
-//        }
-//    }
-//    
-//    return PreviewWrapper()
-//}
+#Preview {
+    struct PreviewWrapper: View {
+        @State private var selectedTab = 1  // Tambahkan State untuk selectedTab
+        @State var path = NavigationPath()
+        var body: some View {
+            do {
+                let container = try ModelContainer(for: RunModel.self)
+                return AnyView(
+                    StopRunView(
+                        viewModel: RunViewModel(context: container.mainContext),
+                        selectedTab: $selectedTab,  // Pastikan Binding digunakan di sini
+                        path: $path
+//                        isRunning: .constant(true)
+                    )
+                    .modelContainer(container)
+                )
+            } catch {
+                return AnyView(Text("Preview Error: \(error.localizedDescription)"))
+            }
+        }
+    }
+    
+    return PreviewWrapper()
+}
 
 

@@ -52,74 +52,74 @@ public struct ReportView: View {
     @State private var isShowingSettings = false
     
     public var body: some View {
-        NavigationStack{
-            ZStack{
-                VStack{
-                    Text("Report")
-                        .font(.title2)
-                        .foregroundStyle(Color("white"))
-                        .bold()
-                    
-                    Spacer()
-                }
-                //                VStack {
-                //                    if viewModel.runs.isEmpty {
-                //                        Text("No run history available.")
-                //                            .font(.subheadline)
-                //                            .foregroundColor(Color("white"))
-                //                    } else {
-                //                        List(viewModel.runs) { run in
-                //                            VStack(alignment: .leading) {
-                //                                Text("🕒 Duration: \(run.duration, specifier: "%.2f") sec")
-                //                                Text("📏 Distance: \(run.distance, specifier: "%.2f") km")
-                //                                Text("🏃 Avg Pace: \(run.averagePace)")
-                //                                Text("🔥 Calories: \(run.calories)")
-                //                                Text("❤️ BPM: \(run.bpm)")
-                //                            }
-                //                            .padding()
-                //                        }
-                //                    }
-                //
-                //                    Text("Achievements")
-                //                        .font(.title2)
-                //                        .foregroundStyle(Color("white"))
-                //                        .bold()
-                //
+        VStack{
+            VStack{
+                Text("Report")
+                    .font(.title2)
+                    .foregroundStyle(Color("white"))
+                    .bold()
+                
                 //                    Spacer()
-                //                }
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color("primary"))
-            .onAppear {
-                viewModel.fetchRuns()
-            }
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button(action: {
-                        isShowingProfile = true
-                    }) {
-                        Image(systemName: "person.circle.fill")
-                            .font(.title2)
-                            .foregroundColor(.orange)
+            VStack {
+                if viewModel.runs.isEmpty {
+                    Text("No run history available.")
+                        .font(.subheadline)
+                        .foregroundColor(Color("white"))
+                } else {
+                    List(viewModel.runs) { run in
+                        VStack(alignment: .leading) {
+                            Text(run.timestamp.formatted())
+                                .foregroundColor(.gray)
+                            Text("🕒 Duration: \(run.duration, specifier: "%.2f") sec")
+                            Text("📏 Distance: \(run.distance, specifier: "%.2f") km")
+                            Text("🏃 Avg Pace: \(run.averagePace)")
+                            Text("🔥 Calories: \(run.calories)")
+                            Text("❤️ BPM: \(run.bpm)")
+                        }
+                        .padding()
                     }
                 }
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: {
-                        isShowingSettings = true
-                    }) {
-                        Image(systemName: "gearshape.fill")
-                            .font(.title2)
-                            .foregroundColor(.orange)
-                    }
+                
+                Text("Achievements")
+                    .font(.title2)
+                    .foregroundStyle(Color("white"))
+                    .bold()
+                
+                Spacer()
+            }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color("primary"))
+        //            .onAppear {
+        //                viewModel.fetchRuns()
+        //            }
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button(action: {
+                    isShowingProfile = true
+                }) {
+                    Image(systemName: "person.circle.fill")
+                        .font(.title2)
+                        .foregroundColor(.orange)
                 }
             }
-            .fullScreenCover(isPresented: $isShowingProfile) {
-                ProfileView()
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button(action: {
+                    isShowingSettings = true
+                }) {
+                    Image(systemName: "gearshape.fill")
+                        .font(.title2)
+                        .foregroundColor(.orange)
+                }
             }
-            .fullScreenCover(isPresented: $isShowingSettings) {
-                SettingsView()
-            }
+        }
+        .fullScreenCover(isPresented: $isShowingProfile) {
+            ProfileView()
+        }
+        .fullScreenCover(isPresented: $isShowingSettings) {
+            SettingsView()
         }
     }
 }

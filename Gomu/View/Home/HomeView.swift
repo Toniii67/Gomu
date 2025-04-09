@@ -113,98 +113,96 @@ public struct HomeView: View {
     @State private var isShowingProfile = false
     
     public var body: some View {
-        NavigationStack {
-            ZStack {
-                Image("AwanHome")
-
-                VStack {
-                    HStack {
-                        Text("Weekly Goals")
-                            .font(.title2)
-                            .bold()
-                            .foregroundStyle(Color("white"))
-                            .padding(.leading, 20)
-                        Spacer()
-                    }
-                    .padding(.top, 15)
-                    
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 10)
-                            .fill(Color("white3"))
-                            .frame(height: 175)
-                            .padding(.horizontal, 20)
-                        
-                        VStack {
-                            Text("0.00 Km / 10.00 Km")
-                                .font(.title2)
-                                .foregroundStyle(.white)
-                                .bold()
-                            
-                            ZStack {
-                                RoundedRectangle(cornerRadius: 10)
-                                    .fill(Color("secondary"))
-                                    .frame(width: 120, height: 40)
-                                
-                                Text("Set goal")
-                                    .font(.headline)
-                                    .bold()
-                                    .foregroundStyle(.white)
-                            }
-                        }
-                    }
-                    
-                    HStack {
-                        Text("Challenge")
-                            .font(.title2)
-                            .bold()
-                            .foregroundStyle(Color("white"))
-                            .padding(.leading, 20)
-                        Spacer()
-                    }
-                    .padding(.top, 15)
-                    
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 10)
-                            .fill(Color("white3"))
-                            .frame(height: 175)
-                            .padding(.horizontal, 20)
-                    }
-                    
+        ZStack {
+            Image("AwanHome")
+            
+            VStack {
+                HStack {
+                    Text("Weekly Goals")
+                        .font(.title2)
+                        .bold()
+                        .foregroundStyle(Color("white"))
+                        .padding(.leading, 20)
                     Spacer()
                 }
-                .padding(.top, 10)
-            }
-            .background(Color("primary"))
-//            .ignoresSafeArea()
-//            .navigationTitle("Home")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button(action: {
-                        isShowingProfile = true
-                    }) {
-                        Image(systemName: "person.circle.fill")
+                .padding(.top, 15)
+                
+                ZStack {
+                    RoundedRectangle(cornerRadius: 10)
+                        .fill(Color("white3"))
+                        .frame(height: 175)
+                        .padding(.horizontal, 20)
+                    
+                    VStack {
+                        Text("0.00 Km / 10.00 Km")
                             .font(.title2)
-                            .foregroundColor(.orange)
+                            .foregroundStyle(.white)
+                            .bold()
+                        
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 10)
+                                .fill(Color("secondary"))
+                                .frame(width: 120, height: 40)
+                            
+                            Text("Set goal")
+                                .font(.headline)
+                                .bold()
+                                .foregroundStyle(.white)
+                        }
                     }
                 }
                 
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: {
-                        isShowingSettings = true
-                    }) {
-                        Image(systemName: "gearshape.fill")
-                            .font(.title2)
-                            .foregroundColor(.orange)
-                    }
+                HStack {
+                    Text("Challenge")
+                        .font(.title2)
+                        .bold()
+                        .foregroundStyle(Color("white"))
+                        .padding(.leading, 20)
+                    Spacer()
+                }
+                .padding(.top, 15)
+                
+                ZStack {
+                    RoundedRectangle(cornerRadius: 10)
+                        .fill(Color("white3"))
+                        .frame(height: 175)
+                        .padding(.horizontal, 20)
+                }
+                
+                Spacer()
+            }
+            .padding(.top, 10)
+        }
+        .background(Color("primary"))
+        //            .ignoresSafeArea()
+        //            .navigationTitle("Home")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button(action: {
+                    isShowingProfile = true
+                }) {
+                    Image(systemName: "person.circle.fill")
+                        .font(.title2)
+                        .foregroundColor(.orange)
                 }
             }
-            .fullScreenCover(isPresented: $isShowingSettings) {
-                SettingsView()
+            
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button(action: {
+                    isShowingSettings = true
+                }) {
+                    Image(systemName: "gearshape.fill")
+                        .font(.title2)
+                        .foregroundColor(.orange)
+                }
             }
-            .fullScreenCover(isPresented: $isShowingProfile) {
-                ProfileView()
-            }
+        }
+        .fullScreenCover(isPresented: $isShowingSettings) {
+            SettingsView()
+        }
+        .fullScreenCover(isPresented: $isShowingProfile) {
+            ProfileView()
         }
     }
 }
