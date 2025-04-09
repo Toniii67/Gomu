@@ -13,10 +13,11 @@ import Foundation
 struct StopRunView: View {
     @State private var navigateToReport = false
     @ObservedObject var viewModel: RunViewModel
-    @Binding var isPaused: Bool
+//    @Binding var isPaused: Bool
     @Binding var selectedTab: Int
-    @Binding var isRunning: Bool
-    @Environment(\.dismiss) var dismiss
+    @Binding var path: NavigationPath
+//    @Binding var isRunning: Bool
+//    @Environment(\.dismiss) var dismiss
     @State var dialog: String = "Ayo! dikit lagi! Kamu pasti bisa!"
 
     var body: some View {
@@ -48,9 +49,12 @@ struct StopRunView: View {
                         // Tombol Stop
                         Button(action:{
                             print("Stop")
-                            dismiss()
+//                            dismiss()
                             viewModel.stopRun()
-                            self.isRunning = false
+                            path = NavigationPath()
+                            selectedTab = 2
+//                            path.removeLast(path.count)
+//                            self.isRunning = false
                         }){
                             Image(systemName: "stop.fill")
                                 .resizable()
@@ -63,8 +67,9 @@ struct StopRunView: View {
                         // Tombol Resume
                         Button(action:{
                             print("resume")
-                            self.isPaused = false
+//                            self.viewModel.isRunning = false
                             viewModel.resumeRun()
+                            path.removeLast()
                         }){
                             Image(systemName: "play.fill")
                                 .resizable()
@@ -98,6 +103,8 @@ struct StopRunView: View {
             }
         }
         .padding(0)
+        .navigationBarBackButtonHidden(true)
+        .toolbar(.hidden, for: .navigationBar)
     }
 }
 
@@ -168,29 +175,29 @@ struct MapView: View {
     }
 }
 
-#Preview {
-    struct PreviewWrapper: View {
-        @State private var selectedTab = 1  // Tambahkan State untuk selectedTab
-        
-        var body: some View {
-            do {
-                let container = try ModelContainer(for: RunModel.self)
-                return AnyView(
-                    StopRunView(
-                        viewModel: RunViewModel(context: container.mainContext),
-                        isPaused: .constant(false),
-                        selectedTab: $selectedTab,  // Pastikan Binding digunakan di sini
-                        isRunning: .constant(true)
-                    )
-                    .modelContainer(container)
-                )
-            } catch {
-                return AnyView(Text("Preview Error: \(error.localizedDescription)"))
-            }
-        }
-    }
-    
-    return PreviewWrapper()
-}
+//#Preview {
+//    struct PreviewWrapper: View {
+//        @State private var selectedTab = 1  // Tambahkan State untuk selectedTab
+//        
+//        var body: some View {
+//            do {
+//                let container = try ModelContainer(for: RunModel.self)
+//                return AnyView(
+//                    StopRunView(
+//                        viewModel: RunViewModel(context: container.mainContext),
+//                        isPaused: .constant(false),
+//                        selectedTab: $selectedTab  // Pastikan Binding digunakan di sini
+////                        isRunning: .constant(true)
+//                    )
+//                    .modelContainer(container)
+//                )
+//            } catch {
+//                return AnyView(Text("Preview Error: \(error.localizedDescription)"))
+//            }
+//        }
+//    }
+//    
+//    return PreviewWrapper()
+//}
 
 

@@ -18,7 +18,7 @@ class RunViewModel: ObservableObject {
     @Published var calories: Int = 0
     @Published var elevation: Double = 0.0
     @Published var locationManager: LocationManager = LocationManager()
-    @Published var avgPage: String = ""
+    @Published var avgPage: String = "--"
     private var date: Date = Date()
     private var healthManager: HealthManager = HealthManager()
     private var timer: Timer?
@@ -43,20 +43,19 @@ class RunViewModel: ObservableObject {
         bpm = 0
         calories = 0
         elevation = 0.0
-        locationManager = LocationManager()
         locationManager.startTracking()
-        timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
-            self.duration += 1
+        self.healthManager.startHeartRateUpdates { bpm in
+            self.bpm = bpm
+        }
+        self.healthManager.startCaloriesUpdates(start: self.date) { calories in
+            self.calories = calories
+        }
+        timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) {[weak self] _ in
+            self?.duration += 1
 //            let now = Date()
             DispatchQueue.main.async {
-                self.distance = self.locationManager.calculateTotalDistance()
-                self.healthManager.startHeartRateUpdates { bpm in
-                    self.bpm = bpm
-                }
-                self.healthManager.startCaloriesUpdates(start: self.date) { calories in
-                    self.calories = calories
-                }
-                self.calculatePace()
+                self?.distance = self?.locationManager.calculateTotalDistance() ?? 0.0
+                self?.calculatePace()
             }
         }
         self.elevation = self.locationManager.calculateElevationGain()
@@ -64,6 +63,7 @@ class RunViewModel: ObservableObject {
 
     func pauseRun() {
         timer?.invalidate()
+        timer = nil
         locationManager.stopTracking()
         healthManager.stopHealthKitUpdates()
     }
@@ -71,17 +71,17 @@ class RunViewModel: ObservableObject {
     func resumeRun() {
         isRunning = true
         locationManager.startTracking()
-        timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
-            self.duration += 1
+        self.healthManager.startHeartRateUpdates { bpm in
+            self.bpm = bpm
+        }
+        self.healthManager.startCaloriesUpdates(start: self.date) { calories in
+            self.calories = calories
+        }
+        timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) {[weak self] _ in
+            self?.duration += 1
             DispatchQueue.main.async {
-                self.distance = self.locationManager.calculateTotalDistance()
-                self.healthManager.startHeartRateUpdates { bpm in
-                    self.bpm = bpm
-                }
-                self.healthManager.startCaloriesUpdates(start: self.date) { calories in
-                    self.calories = calories
-                }
-                self.calculatePace()
+                self?.distance = self?.locationManager.calculateTotalDistance() ?? 0.0
+                self?.calculatePace()
             }
         }
         
@@ -90,8 +90,10 @@ class RunViewModel: ObservableObject {
     
     func stopRun() {
         timer?.invalidate()
+        timer = nil
         isRunning = false
         locationManager.stopTracking()
+        healthManager.stopHealthKitUpdates()
         
 //        let distanceInMiles = distance / 1.6
 //        var averagePace = "--"
@@ -150,12 +152,11 @@ class RunViewModel: ObservableObject {
         let distanceInMiles = self.distance / 1.6
         var averagePace = "--"
         
-        if distanceInMiles >= 1 {
-            let paceInSeconds = duration / distanceInMiles
-            let minutes = Int(paceInSeconds) / 60
-            let seconds = Int(paceInSeconds) % 60
-            averagePace = String(format: "%02d:%02d", minutes, seconds)
-        }
+        let paceInSeconds = duration / distanceInMiles
+        let minutes = Int(paceInSeconds) / 60
+        let seconds = Int(paceInSeconds) % 60
+        averagePace = String(format: "%02d:%02d", minutes, seconds)
+        
         self.avgPage = averagePace
     }
     
