@@ -10,7 +10,7 @@ import SwiftUI
 //public struct HomeView: View {
 //    @State private var isShowingSettings = false
 //    @State private var isShowingProfile = false
-//    
+//
 //    public var body: some View {
 //        ZStack{
 //            Image("AwanHome")
@@ -24,9 +24,9 @@ import SwiftUI
 //                            .font(.largeTitle)
 //                            .foregroundColor(.orange)
 //                    }
-//                    
+//
 //                    Spacer()
-//                    
+//
 //                    Button(action: {
 //                        print("settings")
 //                        isShowingSettings = true
@@ -37,7 +37,7 @@ import SwiftUI
 //                    }
 //                }
 //                .padding(.horizontal)
-//                
+//
 //                HStack{
 //                    Text("Weekly Goals")
 //                        .font(.title2)
@@ -47,9 +47,9 @@ import SwiftUI
 //                    Spacer()
 //                }
 //                .padding(.top, 15)
-//                
-//                    
-//                
+//
+//
+//
 //                ZStack{
 //                    RoundedRectangle(cornerRadius: 10)
 //                        .fill(Color("white3"))
@@ -60,13 +60,13 @@ import SwiftUI
 //                            .font(.title2)
 //                            .foregroundStyle(.white)
 //                            .bold()
-//                        
+//
 ////                        ProgressView(value: 0.25)
 //                        ZStack{
 //                            RoundedRectangle(cornerRadius: 10)
 //                                .fill(Color("secondary"))
 //                                .frame(width: 120, height: 40)
-//                            
+//
 //                            Text("Set goal")
 //                                .font(.headline)
 //                                .bold()
@@ -74,7 +74,7 @@ import SwiftUI
 //                        }
 //                    }
 //                }
-//                
+//
 //                HStack{
 //                    Text("Challenge")
 //                        .font(.title2)
@@ -84,15 +84,15 @@ import SwiftUI
 //                    Spacer()
 //                }
 //                .padding(.top, 15)
-//                
+//
 //                ZStack{
 //                    RoundedRectangle(cornerRadius: 10)
 //                        .fill(Color("white3"))
 //                        .frame(height: 175)
 //                        .padding(.horizontal, 20)
-//                    
+//
 //                }
-//                
+//
 //                Spacer()
 //            }
 //            .fullScreenCover(isPresented: $isShowingSettings) {
@@ -104,7 +104,7 @@ import SwiftUI
 //        }
 //        .frame(maxWidth: .infinity, maxHeight: .infinity)
 //        .background(Color("primary"))
-//        
+//
 //    }
 //}
 
@@ -116,7 +116,7 @@ public struct HomeView: View {
         NavigationStack {
             ZStack {
                 Image("AwanHome")
-
+                
                 VStack {
                     HStack {
                         Text("Weekly Goals")
@@ -163,20 +163,49 @@ public struct HomeView: View {
                     }
                     .padding(.top, 15)
                     
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 10)
-                            .fill(Color("white3"))
-                            .frame(height: 175)
-                            .padding(.horizontal, 20)
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 16) {
+                            ForEach(0..<5) { _ in
+                                ZStack {
+                                    RoundedRectangle(cornerRadius: 10)
+                                        .fill(Color("white3"))
+                                    
+                                    HStack(alignment: .top, spacing: 12) {
+                                        Image("KilometerCrusher")
+                                            .resizable()
+                                            .frame(width: 80, height: 80)
+                                            .clipShape(RoundedRectangle(cornerRadius: 8))
+
+                                        VStack(alignment: .leading, spacing: 6) {
+                                            Text("Run Streak Revolution: 30 Days Non-Stop Tracking Challenge")
+                                                .font(.headline)
+                                                .foregroundColor(.black)
+                                                .lineLimit(2)
+                                                .fixedSize(horizontal: false, vertical: true)
+
+                                            Text("Track every run in Gomu for 30 consecutive days. No distance requirements—just stay consistent!")
+                                                .font(.subheadline)
+                                                .foregroundColor(.gray)
+                                                .lineLimit(3)
+                                                .fixedSize(horizontal: false, vertical: true)
+                                        }
+                                    }
+                                    .padding()
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                }
+                                .frame(width: 300, height: 175) // Pastikan frame card tegas
+                            }
+                        }
+                        .padding(.horizontal, 20)
                     }
-                    
+                   
                     Spacer()
                 }
                 .padding(.top, 10)
             }
             .background(Color("primary"))
-//            .ignoresSafeArea()
-//            .navigationTitle("Home")
+            //            .ignoresSafeArea()
+            //            .navigationTitle("Home")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
