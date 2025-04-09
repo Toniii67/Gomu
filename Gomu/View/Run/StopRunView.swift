@@ -116,16 +116,17 @@ struct RunDetails: View{
                                 fontSize: 30
                                 )
                 Spacer()
-                InformationText(label: "Avg. Pace", data: "6'30''", fontSize: 30)
+                InformationText(label: "Avg. Pace", data: viewModel.avgPage, fontSize: 30)
                 Spacer()
                 InformationText(label: "Kilometres",
                                 data: String(format: "%.2f", viewModel.distance),
                                 fontSize: 30)
             }
             HStack{
-                InformationText(label: "Elevation", data: viewModel.elevation.formatted(), fontSize: 30)
+                InformationText(label: "Elevation", data: String(format: "%.2f",(viewModel.elevation)), fontSize: 30)
                 Spacer()
-                InformationText(label: "BPM", data: String(format: "%.2f",viewModel.bpm.formatted()), fontSize: 30)
+//                InformationText(label: "BPM", data:( viewModel.bpm != 0 ?  String(format: "%.2f",viewModel.bpm.formatted()) : "--"), fontSize: 30)
+                InformationText(label: "BPM", data: viewModel.bpm.formatted(), fontSize: 30)
                 Spacer()
                 InformationText(label: "Calories", data: viewModel.calories.formatted(), fontSize: 30)
             }

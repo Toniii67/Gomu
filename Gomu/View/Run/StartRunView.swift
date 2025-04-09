@@ -33,10 +33,7 @@ public struct StartRunView: View {
                     InformationText(label: "kilometers", data: String(format: "%.2f", viewModel.distance))
                     HStack{
                         InformationText(label: "Time", data: formatTime(viewModel.duration))
-                        InformationText(label: "Avg. Pace",
-                                        data: viewModel.distance >= 1.6 ?
-                                        formatPace(viewModel.duration, viewModel.distance)
-                                        : "--")
+                        InformationText(label: "Avg. Pace", data: viewModel.avgPage)
                     }
                 }
                 .padding()
