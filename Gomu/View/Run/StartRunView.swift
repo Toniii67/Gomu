@@ -13,6 +13,7 @@ public struct StartRunView: View {
     @ObservedObject var viewModel: RunViewModel
     @State private var isPaused: Bool = false
     @Binding var selectedTab: Int
+    @Binding var isRunning: Bool
     
     public var body: some View {
         ZStack{
@@ -32,10 +33,7 @@ public struct StartRunView: View {
                     InformationText(label: "kilometers", data: String(format: "%.2f", viewModel.distance))
                     HStack{
                         InformationText(label: "Time", data: formatTime(viewModel.duration))
-                        InformationText(label: "Avg. Pace",
-                                        data: viewModel.distance >= 1.6 ?
-                                        formatPace(viewModel.duration, viewModel.distance)
-                                        : "--")
+                        InformationText(label: "Avg. Pace", data: viewModel.avgPage)
                     }
                 }
                 .padding()
@@ -72,7 +70,12 @@ public struct StartRunView: View {
             .padding(.bottom, 20)
         }
         .fullScreenCover(isPresented: $isPaused){
-            StopRunView(viewModel: viewModel, isPaused: $isPaused, selectedTab: $selectedTab)
+            StopRunView(
+                viewModel: viewModel,
+                isPaused: $isPaused,
+                selectedTab: $selectedTab,
+                isRunning: $isRunning
+            )
         }
         
     }
@@ -100,7 +103,7 @@ public struct StartRunView: View {
         @State private var selectedTab = 1 
 
         var body: some View {
-            StartRunView(viewModel: RunViewModel(), selectedTab: $selectedTab)
+            StartRunView(viewModel: RunViewModel(), selectedTab: $selectedTab, isRunning: .constant(true))
                 .modelContainer(try! ModelContainer(for: RunModel.self))
         }
     }

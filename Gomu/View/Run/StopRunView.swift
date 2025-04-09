@@ -7,93 +7,164 @@
 
 import SwiftUI
 import SwiftData
+import MapKit
+import Foundation
 
 struct StopRunView: View {
+    @State private var navigateToReport = false
     @ObservedObject var viewModel: RunViewModel
     @Binding var isPaused: Bool
-    @State private var navigateToReport = false
     @Binding var selectedTab: Int
-    
+    @Binding var isRunning: Bool
+    @Environment(\.dismiss) var dismiss
+    @State var dialog: String = "Ayo! dikit lagi! Kamu pasti bisa!"
+
     var body: some View {
-        NavigationStack{
+        ZStack{
+            Color("primary")
+                .ignoresSafeArea(.all)
+            Image("BackgroundRun")
+                .resizable()
+                .scaledToFill()
+                .ignoresSafeArea(.all)
             VStack{
-                Text("Map")
-                    .frame(height: 500)
-                ZStack{
-                    Color("primary")
-                        .ignoresSafeArea(.all)
-                    VStack{
-                        Spacer()
-                        Image("BackgroundRun")
-                            .resizable()
-                            .scaledToFill()
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
-                            .ignoresSafeArea(.all)
+                MapView(locationManager: viewModel.locationManager)
+                RunDetails(locationManager: viewModel.locationManager, viewModel: viewModel)
+                    .ignoresSafeArea()
+                
+                VStack{
+                    Gauge(value: 2.5, in: 0...5){
                     }
-                    VStack{
-                        RunDetails()
-                        Gauge(value: 2.1, in: 0...5){
-                            
+                    .tint(Color("secondary"))
+                    .overlay(content: {
+                        Capsule()
+                            .foregroundStyle(Color("secondary"))
+                            .opacity(0.2)
+                    })
+                    .padding()
+//                    ActionButtons(isPaused: $isPaused,
+//                                  viewModel: viewModel)
+                    HStack{
+                        // Tombol Stop
+                        Button(action:{
+                            print("Stop")
+                            dismiss()
+                            viewModel.stopRun()
+                            self.isRunning = false
+                        }){
+                            Image(systemName: "stop.fill")
+                                .resizable()
+                                .frame(width: 24, height: 24)
+                                .padding(20)
+                                .foregroundStyle(Color.white)
+                                .background(Color.black)
+                                .clipShape(.capsule)
+                        }.padding(.horizontal)
+                        // Tombol Resume
+                        Button(action:{
+                            print("resume")
+                            self.isPaused = false
+                            viewModel.resumeRun()
+                        }){
+                            Image(systemName: "play.fill")
+                                .resizable()
+                                .frame(width: 24, height: 24)
+                                .padding(20)
+                                .foregroundStyle(Color.white)
+                                .background(Color("secondary"))
+                                .clipShape(.circle)
                         }
-                        .tint(Color("secondary"))
-                        .padding()
-                        
-                        HStack{
-                            Button(action: {
-                                print("resume")
-                                isPaused = false
-                                viewModel.resumeRun()
-                            }){
-                                Image(systemName: "play")
-                                    .resizable()
-                                    .frame(width: 24, height: 24)
-                                    .padding(30)
-                                    .foregroundColor(.white)
-                                    .background(Color("secondary"))
-                                    .clipShape(Circle())
-                            }
-                            
-                            
-                            
-                            Button(action: {
-                                print("stop")
-                                viewModel.stopRun()
-                                selectedTab = 2
-                            }){
-                                Image(systemName: "stop")
-                                    .resizable()
-                                    .frame(width: 24, height: 24)
-                                    .padding(30)
-                                    .foregroundColor(.white)
-                                    .background(Color("secondary"))
-                                    .clipShape(Circle())
-                            }
-                        }
-                    }.padding(.bottom, 30)
-                    
+                        .padding(.horizontal)
+                    }
+                    .padding(.horizontal)
                 }
+                .padding(.horizontal)
+                HStack{
+                    Image("Gomu")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 284)
+                        .position(x:70, y:200)
+                    ZStack{
+                        Image("ChatBallonSecond")
+                            .resizable()
+                            .scaledToFit()
+                        Text(dialog)
+                    }
+                    .frame(width: 250)
+                    .position(x:20, y:80)
+                }
+                Spacer()
             }
         }
-        
+        .padding(0)
     }
 }
 
 struct RunDetails: View{
+//    var runData: RunModel
+    @ObservedObject var locationManager: LocationManager
+    @ObservedObject var viewModel: RunViewModel
     var body: some View{
         VStack{
             HStack{
-                InformationText(label: "Time", data: "", fontSize: 30)
-                InformationText(label: "Avg. Pace", data: "", fontSize: 30)
-                InformationText(label: "Kilometres", data: "", fontSize: 30)
+                InformationText(label: "Time",
+                                data: (
+                                    ((viewModel.duration >= 60 ? DateComponentsFormatter().string(from: viewModel.duration)
+                                      : (viewModel.duration >= 10 ? "00:\(Int(viewModel.duration))" : "00:0\(Int(viewModel.duration))" )) ?? "00:00")
+                                ),
+                                fontSize: 30
+                                )
+                Spacer()
+                InformationText(label: "Avg. Pace", data: viewModel.avgPage, fontSize: 30)
+                Spacer()
+                InformationText(label: "Kilometres",
+                                data: String(format: "%.2f", viewModel.distance),
+                                fontSize: 30)
             }
             HStack{
-                InformationText(label: "Elevation", data: "", fontSize: 30)
-                InformationText(label: "BPM", data: "", fontSize: 30)
-                InformationText(label: "Calories", data: "", fontSize: 30)
+                InformationText(label: "Elevation", data: String(format: "%.2f",(viewModel.elevation)), fontSize: 30)
+                Spacer()
+//                InformationText(label: "BPM", data:( viewModel.bpm != 0 ?  String(format: "%.2f",viewModel.bpm.formatted()) : "--"), fontSize: 30)
+                InformationText(label: "BPM", data: viewModel.bpm.formatted(), fontSize: 30)
+                Spacer()
+                InformationText(label: "Calories", data: viewModel.calories.formatted(), fontSize: 30)
             }
             
             
         }
+    }
+}
+
+struct MapView: View {
+    @ObservedObject var locationManager: LocationManager
+    let initPosition = CLLocationCoordinate2D(latitude: -6.1754, longitude: 106.8272)
+    var body: some View {
+        Map(position: .constant(
+            MapCameraPosition.region(
+                MKCoordinateRegion(
+                    center: locationManager.coordinates.last ?? initPosition,
+                    span: MKCoordinateSpan(latitudeDelta: 0.001, longitudeDelta: 0.001)
+                )
+            )
+        )){
+            Annotation(
+                "Your Location",
+                coordinate: locationManager.coordinates.last ?? initPosition
+            ){
+                Image(systemName: "figure.walk")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 20, height: 20)
+                    .padding(10)
+                    .foregroundStyle(Color.white)
+                    .background(Color.red)
+                    .clipShape(Circle())
+            }
+            MapPolyline(coordinates: locationManager.coordinates, contourStyle: .straight)
+                .stroke(.blue, lineWidth: 5)
+        }
+        .preferredColorScheme(.light)
     }
 }
 
@@ -108,7 +179,8 @@ struct RunDetails: View{
                     StopRunView(
                         viewModel: RunViewModel(context: container.mainContext),
                         isPaused: .constant(false),
-                        selectedTab: $selectedTab  // Pastikan Binding digunakan di sini
+                        selectedTab: $selectedTab,  // Pastikan Binding digunakan di sini
+                        isRunning: .constant(true)
                     )
                     .modelContainer(container)
                 )

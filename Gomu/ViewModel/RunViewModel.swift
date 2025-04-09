@@ -14,11 +14,15 @@ class RunViewModel: ObservableObject {
     @Published var isRunning = false
     @Published var duration: TimeInterval = 0
     @Published var distance: Double = 0
-    @Published var bpm: Int = 80
+    @Published var bpm: Int = 0
     @Published var calories: Int = 0
-    
-    private var modelContext: ModelContext?
+    @Published var elevation: Double = 0.0
+    @Published var locationManager: LocationManager = LocationManager()
+    @Published var avgPage: String = ""
+    private var date: Date = Date()
+    private var healthManager: HealthManager = HealthManager()
     private var timer: Timer?
+    private var modelContext: ModelContext?
 
     init() {}
 
@@ -36,43 +40,68 @@ class RunViewModel: ObservableObject {
         isRunning = true
         duration = 0
         distance = 0
+        bpm = 0
         calories = 0
-        bpm = 80
+        elevation = 0.0
+        locationManager = LocationManager()
+        locationManager.startTracking()
         timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
             self.duration += 1
-            self.distance += Double.random(in: 0.002...0.004)
-            self.calories += 1
-            self.bpm = Int.random(in: 80...150)
+//            let now = Date()
+            DispatchQueue.main.async {
+                self.distance = self.locationManager.calculateTotalDistance()
+                self.healthManager.startHeartRateUpdates { bpm in
+                    self.bpm = bpm
+                }
+                self.healthManager.startCaloriesUpdates(start: self.date) { calories in
+                    self.calories = calories
+                }
+                self.calculatePace()
+            }
         }
+        self.elevation = self.locationManager.calculateElevationGain()
     }
 
     func pauseRun() {
         timer?.invalidate()
+        locationManager.stopTracking()
+        healthManager.stopHealthKitUpdates()
     }
 
     func resumeRun() {
-            isRunning = true
-            timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
-                self.duration += 1
-                self.distance += Double.random(in: 0.002...0.004)
-                self.calories += 1
-                self.bpm = Int.random(in: 80...150)
+        isRunning = true
+        locationManager.startTracking()
+        timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
+            self.duration += 1
+            DispatchQueue.main.async {
+                self.distance = self.locationManager.calculateTotalDistance()
+                self.healthManager.startHeartRateUpdates { bpm in
+                    self.bpm = bpm
+                }
+                self.healthManager.startCaloriesUpdates(start: self.date) { calories in
+                    self.calories = calories
+                }
+                self.calculatePace()
             }
         }
-
+        
+        self.elevation = self.locationManager.calculateElevationGain()
+    }
+    
     func stopRun() {
         timer?.invalidate()
         isRunning = false
-
-        let distanceInMiles = distance / 1.6
-        var averagePace = "--"
+        locationManager.stopTracking()
         
-        if distanceInMiles >= 1 {
-            let paceInSeconds = duration / distanceInMiles
-            let minutes = Int(paceInSeconds) / 60
-            let seconds = Int(paceInSeconds) % 60
-            averagePace = String(format: "%02d:%02d", minutes, seconds)
-        }
+//        let distanceInMiles = distance / 1.6
+//        var averagePace = "--"
+//        
+//        if distanceInMiles >= 1 {
+//            let paceInSeconds = duration / distanceInMiles
+//            let minutes = Int(paceInSeconds) / 60
+//            let seconds = Int(paceInSeconds) % 60
+//            averagePace = String(format: "%02d:%02d", minutes, seconds)
+//        }
 
         guard let context = modelContext else {
             print("No model context available")
@@ -81,9 +110,9 @@ class RunViewModel: ObservableObject {
 
         let newRun = RunModel(
             duration: duration,
-            averagePace: averagePace,
+            averagePace: avgPage,
             distance: distance,
-            elevation: 10,
+            elevation: elevation,
             bpm: bpm,
             calories: calories
         )
@@ -116,4 +145,18 @@ class RunViewModel: ObservableObject {
             print("Failed to fetch runs: \(error)")
         }
     }
+    
+    func calculatePace(){
+        let distanceInMiles = self.distance / 1.6
+        var averagePace = "--"
+        
+        if distanceInMiles >= 1 {
+            let paceInSeconds = duration / distanceInMiles
+            let minutes = Int(paceInSeconds) / 60
+            let seconds = Int(paceInSeconds) % 60
+            averagePace = String(format: "%02d:%02d", minutes, seconds)
+        }
+        self.avgPage = averagePace
+    }
+    
 }

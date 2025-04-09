@@ -253,7 +253,7 @@ public struct RunView: View {
                 SettingsView()
             }
             .fullScreenCover(isPresented: $isRunning) {
-                StartRunView(viewModel: viewModel, selectedTab: $selectedTab)
+                StartRunView(viewModel: viewModel, selectedTab: $selectedTab, isRunning: $isRunning)
             }
             .fullScreenCover(isPresented: $isShowingProfile) {
                 ProfileView()
