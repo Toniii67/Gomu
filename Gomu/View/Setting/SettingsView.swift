@@ -9,37 +9,51 @@ import SwiftUI
 
 public struct SettingsView: View {
     @Environment(\.presentationMode) var presentationMode
+//    @EnvironmentObject var signInManager: AppleSignInManager
 
     public var body: some View {
         VStack {
-            // Custom Navbar
             HStack {
                 Spacer()
                 Text("Settings")
                     .font(.title2)
                     .fontWeight(.bold)
-                    .foregroundColor(.black)
-                Spacer()
+                    .foregroundColor(.white)
+                    .padding(.trailing, 96)
                 Button(action: {
                     presentationMode.wrappedValue.dismiss()
                 }) {
-                    Image(systemName: "xmark.circle.fill")
+                    Image(systemName: "xmark.circle")
                         .font(.title)
-                        .foregroundColor(.gray)
+                        .foregroundColor(Color("white"))
                 }
             }
-            .padding()
+            .padding(.trailing)
+            
+            VStack(spacing: 20) {
+                SettingRow(icon: "bell.fill", title: "Notification")
+                SettingRow(icon: "paintpalette.fill", title: "Appearance")
+                SettingRow(icon: "lock.fill", title: "Privacy")
+                SettingRow(icon: "info.circle.fill", title: "About")
+                
+                // Log Out button with action
+//                Button(action: {
+//                    signInManager.logout()
+//                }) {
+//                    SettingRow(icon: "arrow.right.square.fill", title: "Log Out")
+//                }
+            }
+            .padding(.horizontal)
+            .padding(.top, 25)
 
-            Spacer()
-            Text("Pengaturan Konten")
-                .font(.headline)
-                .foregroundColor(.gray)
             Spacer()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color.white)
+        .background(Color("primary"))
+        .edgesIgnoringSafeArea(.bottom)
     }
 }
+
 
 #Preview {
     SettingsView()

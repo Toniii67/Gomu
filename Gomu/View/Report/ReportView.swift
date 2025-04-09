@@ -9,13 +9,13 @@
 //
 //public struct ReportView: View {
 //    @ObservedObject var viewModel: RunViewModel
-//    
+//
 //    public var body: some View {
 //        VStack {
 //            Text("Running History")
 //                .font(.title)
 //                .bold()
-//            
+//
 //            if viewModel.runs.isEmpty {
 //                Text("No run history available.")
 //                    .font(.subheadline)
@@ -48,37 +48,83 @@ import SwiftData
 
 public struct ReportView: View {
     @ObservedObject var viewModel: RunViewModel
+    @State private var isShowingProfile = false
+    @State private var isShowingSettings = false
     
     public var body: some View {
-        VStack {
-            Text("Running History")
-                .font(.title)
-                .bold()
-            
-            if viewModel.runs.isEmpty {
-                Text("No run history available.")
-                    .font(.subheadline)
-                    .foregroundColor(.gray)
-            } else {
-                List(viewModel.runs) { run in
-                    VStack(alignment: .leading) {
-                        Text("🕒 Duration: \(run.duration, specifier: "%.2f") sec")
-                        Text("📏 Distance: \(run.distance, specifier: "%.2f") km")
-                        Text("🏃 Avg Pace: \(run.averagePace)")
-                        Text("🔥 Calories: \(run.calories)")
-                        Text("❤️ BPM: \(run.bpm)")
+        NavigationStack{
+            ZStack{
+                VStack{
+                    Text("Report")
+                        .font(.title2)
+                        .foregroundStyle(Color("white"))
+                        .bold()
+                    
+                    Spacer()
+                }
+                //                VStack {
+                //                    if viewModel.runs.isEmpty {
+                //                        Text("No run history available.")
+                //                            .font(.subheadline)
+                //                            .foregroundColor(Color("white"))
+                //                    } else {
+                //                        List(viewModel.runs) { run in
+                //                            VStack(alignment: .leading) {
+                //                                Text("🕒 Duration: \(run.duration, specifier: "%.2f") sec")
+                //                                Text("📏 Distance: \(run.distance, specifier: "%.2f") km")
+                //                                Text("🏃 Avg Pace: \(run.averagePace)")
+                //                                Text("🔥 Calories: \(run.calories)")
+                //                                Text("❤️ BPM: \(run.bpm)")
+                //                            }
+                //                            .padding()
+                //                        }
+                //                    }
+                //
+                //                    Text("Achievements")
+                //                        .font(.title2)
+                //                        .foregroundStyle(Color("white"))
+                //                        .bold()
+                //
+                //                    Spacer()
+                //                }
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color("primary"))
+            .onAppear {
+                viewModel.fetchRuns()
+            }
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button(action: {
+                        isShowingProfile = true
+                    }) {
+                        Image(systemName: "person.circle.fill")
+                            .font(.title2)
+                            .foregroundColor(.orange)
                     }
-                    .padding()
+                }
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: {
+                        isShowingSettings = true
+                    }) {
+                        Image(systemName: "gearshape.fill")
+                            .font(.title2)
+                            .foregroundColor(.orange)
+                    }
                 }
             }
-        }
-        .onAppear {
-            viewModel.fetchRuns() // Pastikan data diperbarui saat ReportView dibuka
+            .fullScreenCover(isPresented: $isShowingProfile) {
+                ProfileView()
+            }
+            .fullScreenCover(isPresented: $isShowingSettings) {
+                SettingsView()
+            }
         }
     }
 }
 
 #Preview {
     ReportView(viewModel: RunViewModel())
-            .modelContainer(try! ModelContainer(for: RunModel.self))
+        .modelContainer(try! ModelContainer(for: RunModel.self))
 }
