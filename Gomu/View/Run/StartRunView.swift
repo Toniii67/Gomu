@@ -15,6 +15,8 @@ public struct StartRunView: View {
     @Binding var selectedTab: Int
 //    @Binding var isRunning: Bool
     @Binding var path: NavigationPath
+    @ObservedObject var soundManager = SoundRunManager.shared
+
     
     public var body: some View {
         ZStack{
@@ -42,10 +44,38 @@ public struct StartRunView: View {
                 Spacer()
                 
                 VStack{
-                    Image("ChatBallon")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 250, height: 160)
+                    ZStack{
+                        Image("ChatBallon")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 250, height: 160)
+                        
+                        Text(soundManager.currentMessage)
+//                        Text("Bruh, you're literally unstoppable right now.")
+                            .font(.title3)
+                            .fontWeight(.semibold)
+                            .multilineTextAlignment(.center)
+                            .minimumScaleFactor(0.5)
+                            .lineLimit(3)
+                            .foregroundColor(Color("message"))
+//                            .background(Color.blue)
+                            .frame(width: 250, height: 160)
+                            .position(x: 200, y: 69)
+
+                    }
+//                    .overlay(
+//                        GeometryReader { geometry in
+//                            Text(chatViewModel.currentMessage)
+//                                .font(.headline)
+//                                .fontWeight(.semibold)
+//                                .multilineTextAlignment(.center)
+//                                .minimumScaleFactor(0.5)
+//                                .lineLimit(3)
+//                                .foregroundColor(Color("message"))
+//                                .frame(width: 230, height: 110)
+//                                .position(x: 127, y: 104)
+//                        }
+//                    )
                     
                     Image("Gomu")
                         .resizable()
@@ -101,17 +131,19 @@ public struct StartRunView: View {
     }
 }
 
-//#Preview {
-//    struct PreviewWrapper: View {
-//        @State private var selectedTab = 1
-//
-//        var body: some View {
-//            StartRunView(viewModel: RunViewModel(), selectedTab: $selectedTab, path: $path
-////                         , isRunning: .constant(true)
-//            )
-//                .modelContainer(try! ModelContainer(for: RunModel.self))
-//        }
-//    }
-//    
-//    return PreviewWrapper()
-//}
+#Preview {
+    struct PreviewWrapper: View {
+        @State private var selectedTab = 1
+        @State private var path = NavigationPath()
+
+
+        var body: some View {
+            StartRunView(viewModel: RunViewModel(), selectedTab: $selectedTab, path: $path
+//                         , isRunning: .constant(true)
+            )
+                .modelContainer(try! ModelContainer(for: RunModel.self))
+        }
+    }
+    
+    return PreviewWrapper()
+}

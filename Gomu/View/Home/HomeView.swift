@@ -140,6 +140,18 @@ public struct HomeView: View {
                                 .foregroundStyle(.white)
                                 .bold()
                             
+                            Gauge(value: 2.5, in: 0...5){
+                            }
+                            .frame(width: 300)
+                            .tint(Color("secondary"))
+                            .overlay(content: {
+                                Capsule()
+                                    .foregroundStyle(Color("secondary"))
+                                    .opacity(0.2)
+                            })
+                            .padding(.bottom, 12)
+                            
+                            
                             ZStack {
                                 RoundedRectangle(cornerRadius: 10)
                                     .fill(Color("secondary"))
@@ -185,7 +197,7 @@ public struct HomeView: View {
 
                                             Text("Track every run in Gomu for 30 consecutive days. No distance requirements—just stay consistent!")
                                                 .font(.subheadline)
-                                                .foregroundColor(.gray)
+                                                .foregroundColor(.white)
                                                 .lineLimit(3)
                                                 .fixedSize(horizontal: false, vertical: true)
                                         }
@@ -193,7 +205,7 @@ public struct HomeView: View {
                                     .padding()
                                     .frame(maxWidth: .infinity, alignment: .leading)
                                 }
-                                .frame(width: 300, height: 175) // Pastikan frame card tegas
+                                .frame(width: 300, height: 175)
                             }
                         }
                         .padding(.horizontal, 20)
@@ -204,8 +216,6 @@ public struct HomeView: View {
                 .padding(.top, 10)
             }
             .background(Color("primary"))
-            //            .ignoresSafeArea()
-            //            .navigationTitle("Home")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
