@@ -52,14 +52,37 @@ public struct ReportView: View {
     @State private var isShowingSettings = false
     
     public var body: some View {
-        VStack{
-            VStack{
-                Text("Report")
-                    .font(.title2)
-                    .foregroundStyle(Color("white"))
-                    .bold()
-                
-                //                    Spacer()
+            ZStack{
+                Color("primary")
+                    .ignoresSafeArea()
+                VStack {
+                    if viewModel.runs.isEmpty {
+                        Text("No run history available.")
+                            .font(.subheadline)
+                            .foregroundColor(Color("white"))
+                    } else {
+                        List(viewModel.runs) { run in
+                            VStack(alignment: .leading) {
+                                Text("🕒 Duration: \(run.duration, specifier: "%.2f") sec")
+                                Text("📏 Distance: \(run.distance, specifier: "%.2f") km")
+                                Text("🏃 Avg Pace: \(run.averagePace)")
+                                Text("🔥 Calories: \(run.calories)")
+                                Text("❤️ BPM: \(run.bpm)")
+                            }
+                            .padding()
+                            .listRowBackground(Color("white2"))
+                        }
+                        .listStyle(.plain)
+                        .scrollContentBackground(.hidden)
+                        .background(Color("primary"))
+                        Spacer()
+                    }
+                }
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color("primary"))
+            .onAppear {
+                viewModel.fetchRuns()
             }
             VStack {
                 if viewModel.runs.isEmpty {
@@ -121,7 +144,6 @@ public struct ReportView: View {
         .fullScreenCover(isPresented: $isShowingSettings) {
             SettingsView()
         }
-    }
 }
 
 #Preview {

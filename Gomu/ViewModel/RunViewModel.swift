@@ -7,6 +7,10 @@
 
 import SwiftUI
 import SwiftData
+import Combine
+
+
+
 
 @MainActor
 class RunViewModel: ObservableObject {
@@ -23,8 +27,17 @@ class RunViewModel: ObservableObject {
     private var healthManager: HealthManager = HealthManager()
     private var timer: Timer?
     private var modelContext: ModelContext?
+    private var hasPlayed1MinuteSound = false
+    
+    private var cancellables = Set<AnyCancellable>()
+    private var soundManager = SoundRunManager.shared
 
-    init() {}
+    init() {
+        soundManager = SoundRunManager.shared
+    }
+
+
+//    init() {}
 
     init(context: ModelContext) {
         self.modelContext = context
@@ -50,14 +63,15 @@ class RunViewModel: ObservableObject {
         self.healthManager.startCaloriesUpdates(start: self.date) { calories in
             self.calories = calories
         }
-        timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) {[weak self] _ in
-            self?.duration += 1
-//            let now = Date()
+      
+        timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
+            guard let self = self else { return }
+            self.duration += 1
             DispatchQueue.main.async {
-                self?.distance = self?.locationManager.calculateTotalDistance() ?? 0.0
-                self?.calculatePace()
-                print(self?.avgPace)
+              self.distance = self.locationManager.calculateTotalDistance()
+              self.calculatePace()
             }
+            self.soundManager.checkAndPlay(for: self.duration)
         }
         self.elevation = self.locationManager.calculateElevationGain()
     }
@@ -69,6 +83,32 @@ class RunViewModel: ObservableObject {
         healthManager.stopHealthKitUpdates()
     }
 
+//    func resumeRun() {
+//        isRunning = true
+//        locationManager.startTracking()
+//        self.healthManager.startHeartRateUpdates { bpm in
+//            self.bpm = bpm
+//        }
+//        self.healthManager.startCaloriesUpdates(start: self.date) { calories in
+//            self.calories = calories
+//        }
+//        timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) {[weak self] _ in
+//            self?.duration += 1
+//            
+////            if let duration = self?.duration, duration == 15, self?.hasPlayed1MinuteSound == false {
+////                SoundManager.shared.playSound(named: "soundStartRun1")
+////                self?.hasPlayed1MinuteSound = true
+////            }
+////            
+//            DispatchQueue.main.async {
+//                self?.distance = self?.locationManager.calculateTotalDistance() ?? 0.0
+//                self?.calculatePace()
+//            }
+//        }
+//        
+//        self.elevation = self.locationManager.calculateElevationGain()
+//    }
+    
     func resumeRun() {
         isRunning = true
         locationManager.startTracking()
@@ -78,16 +118,22 @@ class RunViewModel: ObservableObject {
         self.healthManager.startCaloriesUpdates(start: self.date) { calories in
             self.calories = calories
         }
-        timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) {[weak self] _ in
-            self?.duration += 1
+        timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
+            guard let self = self else { return }
+            self.duration += 1
+            
             DispatchQueue.main.async {
-                self?.distance = self?.locationManager.calculateTotalDistance() ?? 0.0
-                self?.calculatePace()
+                self.distance = self.locationManager.calculateTotalDistance()
+                self.calculatePace()
             }
+
+            // 🔊 Cek suara setiap detik
+            SoundRunManager.shared.checkAndPlay(for: self.duration)
         }
-        
+
         self.elevation = self.locationManager.calculateElevationGain()
     }
+
     
     func stopRun() {
         print("trying stopping")
@@ -164,5 +210,6 @@ class RunViewModel: ObservableObject {
         
         self.avgPace = String(format: "%02d:%02d", minutes, seconds)
     }
+
     
 }

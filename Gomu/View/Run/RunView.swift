@@ -5,8 +5,7 @@
 //  Created by Franco Antonio Pranata on 25/03/25.
 //
 
-import SwiftUI
-import SwiftData
+
 
 //
 //public struct RunView: View {
@@ -137,6 +136,9 @@ import SwiftData
 //    }
 //}
 
+import SwiftUI
+import SwiftData
+
 public struct RunView: View {
     @ObservedObject var viewModel: RunViewModel
     @State private var isShowingSettings = false
@@ -251,7 +253,7 @@ public struct RunView: View {
                 }
             }
         }
-        //            .navigationTitle("Run")
+        .navigationBarTitleDisplayMode(.inline)
         .fullScreenCover(isPresented: $isShowingSettings) {
             SettingsView()
         }
@@ -265,15 +267,14 @@ public struct RunView: View {
 #Preview {
     struct PreviewWrapper: View {
         @State private var selectedTab = 1
-        @State var path = NavigationPath()
+        @State private var path = NavigationPath()
         
         var body: some View {
             do {
                 let container = try ModelContainer(for: RunModel.self)
                 return AnyView(
                     RunView(
-                        viewModel: RunViewModel(context: container.mainContext), path: $path,
-                        selectedTab: $selectedTab
+                        viewModel: RunViewModel(context: container.mainContext), path: $path, selectedTab: $selectedTab
                     )
                     .modelContainer(container)
                 )

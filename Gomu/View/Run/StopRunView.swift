@@ -18,7 +18,7 @@ struct StopRunView: View {
     @Binding var path: NavigationPath
 //    @Binding var isRunning: Bool
 //    @Environment(\.dismiss) var dismiss
-    @State var dialog: String = "Ayo! dikit lagi! Kamu pasti bisa!"
+    @State var dialog: String = "Are you want to stop?"
 
     var body: some View {
         ZStack{
@@ -95,6 +95,12 @@ struct StopRunView: View {
                             .resizable()
                             .scaledToFit()
                         Text(dialog)
+                            .font(.title3)
+                            .fontWeight(.semibold)
+                            .minimumScaleFactor(0.5)
+                            .lineLimit(3)
+                            .foregroundColor(Color("message"))
+                            .position(x: 125, y: 95)
                     }
                     .frame(width: 250)
                     .position(x:20, y:80)
@@ -177,16 +183,16 @@ struct MapView: View {
 #Preview {
     struct PreviewWrapper: View {
         @State private var selectedTab = 1  // Tambahkan State untuk selectedTab
-        @State var path = NavigationPath()
+        @State private var path = NavigationPath()
+
         var body: some View {
             do {
                 let container = try ModelContainer(for: RunModel.self)
                 return AnyView(
                     StopRunView(
                         viewModel: RunViewModel(context: container.mainContext),
-                        selectedTab: $selectedTab,  // Pastikan Binding digunakan di sini
-                        path: $path
-//                        isRunning: .constant(true)
+//                        isPaused: .constant(false),
+                        selectedTab: $selectedTab, path: $path
                     )
                     .modelContainer(container)
                 )
