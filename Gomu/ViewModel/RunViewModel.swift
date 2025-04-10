@@ -22,7 +22,7 @@ class RunViewModel: ObservableObject {
     @Published var calories: Int = 0
     @Published var elevation: Double = 0.0
     @Published var locationManager: LocationManager = LocationManager()
-    @Published var avgPage: String = "--"
+    @Published var avgPace: String = "--"
     private var date: Date = Date()
     private var healthManager: HealthManager = HealthManager()
     private var timer: Timer?
@@ -63,19 +63,14 @@ class RunViewModel: ObservableObject {
         self.healthManager.startCaloriesUpdates(start: self.date) { calories in
             self.calories = calories
         }
-//        timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) {[weak self] _ in
-//            self?.duration += 1
-//            DispatchQueue.main.async {
-//                self?.distance = self?.locationManager.calculateTotalDistance() ?? 0.0
-//                self?.calculatePace()
-//            }
-//        }
-        
+      
         timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
             guard let self = self else { return }
             self.duration += 1
-            self.distance = self.locationManager.calculateTotalDistance()
-            self.calculatePace()
+            DispatchQueue.main.async {
+              self.distance = self.locationManager.calculateTotalDistance()
+              self.calculatePace()
+            }
             self.soundManager.checkAndPlay(for: self.duration)
         }
         self.elevation = self.locationManager.calculateElevationGain()
@@ -141,21 +136,17 @@ class RunViewModel: ObservableObject {
 
     
     func stopRun() {
+        print("trying stopping")
         timer?.invalidate()
+        print("done invalidate timer")
         timer = nil
+        print("done set timer to nil")
         isRunning = false
+        print("done set isRunning to false")
         locationManager.stopTracking()
+        print("done stopping location manager")
         healthManager.stopHealthKitUpdates()
-        
-//        let distanceInMiles = distance / 1.6
-//        var averagePace = "--"
-//        
-//        if distanceInMiles >= 1 {
-//            let paceInSeconds = duration / distanceInMiles
-//            let minutes = Int(paceInSeconds) / 60
-//            let seconds = Int(paceInSeconds) % 60
-//            averagePace = String(format: "%02d:%02d", minutes, seconds)
-//        }
+        print("done stopping healtkit")
 
         guard let context = modelContext else {
             print("No model context available")
@@ -163,8 +154,9 @@ class RunViewModel: ObservableObject {
         }
 
         let newRun = RunModel(
+            timestamp: date,
             duration: duration,
-            averagePace: avgPage,
+            averagePace: avgPace,
             distance: distance,
             elevation: elevation,
             bpm: bpm,
@@ -200,25 +192,23 @@ class RunViewModel: ObservableObject {
         }
     }
     
-//    func calculatePace(){
-//        let distanceInMiles = self.distance / 1.6
+    func calculatePace(){
 //        var averagePace = "--"
-//        
-//        let paceInSeconds = duration / distanceInMiles
-//        let minutes = Int(paceInSeconds) / 60
-//        let seconds = Int(paceInSeconds) % 60
-//        averagePace = String(format: "%02d:%02d", minutes, seconds)
-//        
-//        self.avgPage = averagePace
-//    }
-    
-    func calculatePace() {
-        guard distance > 0 else {
-            avgPage = "--"
+        if distance == 0 {
+            self.avgPace = "--"
             return
         }
-        let pace = duration / distance
-        avgPage = String(format: "%.2f min/km", pace / 60)
+        
+        let distanceInMiles = self.distance / 1.6
+        let paceInSeconds = duration / distanceInMiles
+        let minutes = Int(paceInSeconds) / 60
+        let seconds = Int(paceInSeconds) % 60
+        if minutes >= 60 {
+            self.avgPace = "--"
+            return
+        }
+        
+        self.avgPace = String(format: "%02d:%02d", minutes, seconds)
     }
 
     

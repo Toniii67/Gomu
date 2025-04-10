@@ -99,6 +99,9 @@ struct MainTabView: View {
     @State private var selectedTab = 1 // 1 = RunView sebagai default
     @State private var path = NavigationPath()
     @State private var isRunning = false
+    
+    @State private var isShowingSettings = false
+    @State private var isShowingProfile = false
 
     
     init() {
@@ -155,6 +158,34 @@ struct MainTabView: View {
                 default:
                     let _  = print("Error: No Route named: \(destination)")
                 }
+            }
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button(action: {
+                        isShowingProfile = true
+                    }) {
+                        Image(systemName: "person.circle.fill")
+                            .font(.title2)
+                            .foregroundColor(.orange)
+                    }
+                }
+                
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: {
+                        isShowingSettings = true
+                    }) {
+                        Image(systemName: "gearshape.fill")
+                            .font(.title2)
+                            .foregroundColor(.orange)
+                    }
+                }
+            }
+            .fullScreenCover(isPresented: $isShowingSettings) {
+                SettingsView()
+            }
+            .fullScreenCover(isPresented: $isShowingProfile) {
+                ProfileView()
             }
         }
     }

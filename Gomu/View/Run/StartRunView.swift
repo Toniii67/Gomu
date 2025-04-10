@@ -36,7 +36,7 @@ public struct StartRunView: View {
                     InformationText(label: "kilometers", data: String(format: "%.2f", viewModel.distance))
                     HStack{
                         InformationText(label: "Time", data: formatTime(viewModel.duration))
-                        InformationText(label: "Avg. Pace", data: viewModel.avgPage)
+                        InformationText(label: "Avg. Pace", data: viewModel.avgPace)
                     }
                 }
                 .padding()
@@ -135,7 +135,6 @@ public struct StartRunView: View {
     struct PreviewWrapper: View {
         @State private var selectedTab = 1
         @State private var path = NavigationPath()
-
 
         var body: some View {
             StartRunView(viewModel: RunViewModel(), selectedTab: $selectedTab, path: $path

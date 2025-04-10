@@ -129,7 +129,7 @@ struct RunDetails: View{
                                 fontSize: 30
                                 )
                 Spacer()
-                InformationText(label: "Avg. Pace", data: viewModel.avgPage, fontSize: 30)
+                InformationText(label: "Avg. Pace", data: viewModel.avgPace, fontSize: 30)
                 Spacer()
                 InformationText(label: "Kilometres",
                                 data: String(format: "%.2f", viewModel.distance),
@@ -143,9 +143,8 @@ struct RunDetails: View{
                 Spacer()
                 InformationText(label: "Calories", data: viewModel.calories.formatted(), fontSize: 30)
             }
-            
-            
         }
+        .navigationBarBackButtonHidden(true)
     }
 }
 

@@ -231,6 +231,7 @@ public struct RunView: View {
         .onDisappear {
             chatViewModel.stopAudio()
         }
+        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
                 Button(action: {
@@ -241,6 +242,7 @@ public struct RunView: View {
                         .foregroundColor(.orange)
                 }
             }
+            
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button(action: {
                     isShowingSettings = true
@@ -255,9 +257,6 @@ public struct RunView: View {
         .fullScreenCover(isPresented: $isShowingSettings) {
             SettingsView()
         }
-        //            .fullScreenCover(isPresented: $isRunning) {
-        //                StartRunView(viewModel: viewModel, selectedTab: $selectedTab)
-        //            }
         .fullScreenCover(isPresented: $isShowingProfile) {
             ProfileView()
         }
