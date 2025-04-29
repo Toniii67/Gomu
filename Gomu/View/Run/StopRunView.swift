@@ -20,6 +20,11 @@ struct StopRunView: View {
 //    @Environment(\.dismiss) var dismiss
     @State var dialog: String = "Are you want to stop?"
 
+    private func triggerMediumHaptic(){
+        let generator = UIImpactFeedbackGenerator(style: .medium)
+        generator.prepare()
+        generator.impactOccurred()
+    }
     var body: some View {
         ZStack{
             Color("primary")
@@ -48,6 +53,7 @@ struct StopRunView: View {
                     HStack{
                         // Tombol Stop
                         Button(action:{
+                            triggerMediumHaptic()
                             print("Stop")
 //                            dismiss()
                             viewModel.stopRun()
@@ -66,6 +72,7 @@ struct StopRunView: View {
                         }.padding(.horizontal)
                         // Tombol Resume
                         Button(action:{
+                            triggerMediumHaptic()
                             print("resume")
 //                            self.viewModel.isRunning = false
                             viewModel.resumeRun()
@@ -100,7 +107,7 @@ struct StopRunView: View {
                             .minimumScaleFactor(0.5)
                             .lineLimit(3)
                             .foregroundColor(Color("message"))
-                            .position(x: 125, y: 95)
+                            .position(x: 125, y: 92)
                     }
                     .frame(width: 250)
                     .position(x:20, y:80)

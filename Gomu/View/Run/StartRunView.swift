@@ -17,6 +17,11 @@ public struct StartRunView: View {
     @Binding var path: NavigationPath
     @ObservedObject var soundManager = SoundRunManager.shared
 
+    private func triggerMediumHaptic(){
+        let generator = UIImpactFeedbackGenerator(style: .medium)
+        generator.prepare()
+        generator.impactOccurred()
+    }
     
     public var body: some View {
         ZStack{
@@ -60,7 +65,8 @@ public struct StartRunView: View {
                             .foregroundColor(Color("message"))
 //                            .background(Color.blue)
                             .frame(width: 250, height: 160)
-                            .position(x: 200, y: 69)
+//                            .padding(.bottom, 20)
+                            .position(x: 198, y: 60)
 
                     }
 //                    .overlay(
@@ -85,6 +91,7 @@ public struct StartRunView: View {
                 
                 Button(action: {
                     print("pause")
+                    triggerMediumHaptic()
                     viewModel.pauseRun()
 //                    isPaused = true
                     self.viewModel.isRunning = false

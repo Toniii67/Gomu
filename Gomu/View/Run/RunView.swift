@@ -149,6 +149,12 @@ public struct RunView: View {
     
     @Binding var selectedTab: Int
     
+    private func triggerMediumHaptic(){
+        let generator = UIImpactFeedbackGenerator(style: .medium)
+        generator.prepare()
+        generator.impactOccurred()
+    }
+    
     public var body: some View {
         ZStack {
             Color("primary")
@@ -190,6 +196,7 @@ public struct RunView: View {
                 ZStack {
                     Button(action: {
                         print("Start button tapped")
+                        triggerMediumHaptic()
                         viewModel.isRunning = true
                         viewModel.startRun()
                         path.append("startRun")
@@ -261,6 +268,7 @@ public struct RunView: View {
             ProfileView()
         }
     }
+    
 }
 
 

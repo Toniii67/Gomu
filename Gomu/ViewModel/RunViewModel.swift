@@ -50,12 +50,14 @@ class RunViewModel: ObservableObject {
     }
 
     func startRun() {
+        date = Date()
         isRunning = true
         duration = 0
         distance = 0
         bpm = 0
         calories = 0
         elevation = 0.0
+        locationManager = LocationManager()
         locationManager.startTracking()
         self.healthManager.startHeartRateUpdates { bpm in
             self.bpm = bpm
